@@ -87,6 +87,53 @@
 
                 <p id="avisoBarbearia" class="aviso" role="status" aria-live="polite" hidden></p>
 
+                <!-- PRIMEIRO ACESSO -->
+                <section class="cartao" id="painelSetupInicial" aria-labelledby="tituloSetupInicial" hidden>
+                    <h2 class="cartao__titulo" id="tituloSetupInicial">Primeiro acesso</h2>
+
+                    <form id="formSetupInicial" class="formulario-barbearia" novalidate>
+                        <div class="campo">
+                            <label class="campo__rotulo" for="setupNome">Nome da barbearia</label>
+                            <input class="campo__entrada" type="text" id="setupNome" aria-describedby="setupNome-erro">
+                            <span class="campo__erro" id="setupNome-erro" aria-live="polite"></span>
+                        </div>
+
+                        <div class="linha-campos">
+                            <div class="campo">
+                                <label class="campo__rotulo" for="setupAbertura">Abertura</label>
+                                <input class="campo__entrada" type="time" id="setupAbertura" step="300"
+                                    aria-describedby="setupAbertura-erro" value="08:00">
+                                <span class="campo__erro" id="setupAbertura-erro" aria-live="polite"></span>
+                            </div>
+                            <div class="campo">
+                                <label class="campo__rotulo" for="setupFechamento">Fechamento</label>
+                                <input class="campo__entrada" type="time" id="setupFechamento" step="300"
+                                    aria-describedby="setupFechamento-erro" value="20:00">
+                                <span class="campo__erro" id="setupFechamento-erro" aria-live="polite"></span>
+                            </div>
+                        </div>
+
+                        <div class="linha-campos">
+                            <div class="campo">
+                                <label class="campo__rotulo" for="setupUsuario">Usuário administrador</label>
+                                <input class="campo__entrada" type="text" id="setupUsuario" autocomplete="username"
+                                    aria-describedby="setupUsuario-erro">
+                                <span class="campo__erro" id="setupUsuario-erro" aria-live="polite"></span>
+                            </div>
+                            <div class="campo">
+                                <label class="campo__rotulo" for="setupSenha">Senha</label>
+                                <input class="campo__entrada" type="password" id="setupSenha"
+                                    autocomplete="new-password" aria-describedby="setupSenha-erro">
+                                <span class="campo__erro" id="setupSenha-erro" aria-live="polite"></span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button class="botao botao--primario" type="submit">Configurar barbearia</button>
+                        </div>
+                    </form>
+                </section>
+
                 <!-- ABAS -->
                 <div class="abas" role="tablist" aria-label="Áreas da barbearia">
                     <button class="aba" type="button" role="tab" id="abaDados" aria-selected="false"
@@ -211,8 +258,8 @@
     </div>
 
     <script src="js/app.js"></script>
+    <script src="js/api.js"></script>
     <script src="js/classificacao.js"></script>
-    <script src="js/dados.js"></script>
     <script src="js/validacao.js"></script>
     <script src="js/barbearia.js"></script>
 </body>

@@ -1,6 +1,6 @@
 # 💈 Barbershop Web - Front-end
 
-Versão web do Barbershop, feita com **HTML, CSS e JavaScript puros**: sem framework pesado e sem processo de build preliminar. Comunica-se diretamente com a API Spring Boot REST (`api`) via `js/api.js`, mantendo fallback automático para dados locais em memória (`js/dados.js`). É a camada de apresentação que consome as mesmas regras de negócio do módulo `core`.
+Versão web do Barbershop, feita com **HTML, CSS e JavaScript puros**: sem framework pesado e sem processo de build preliminar. Comunica-se diretamente com a API Spring Boot REST (`api`) via `js/api.js`. É a camada de apresentação que consome as mesmas regras de negócio do módulo `core`.
 
 ---
 
@@ -37,7 +37,6 @@ web/
 │   └── paginas.css            Regras específicas de cada tela
 ├── js/
 │   ├── api.js                 Cliente HTTP REST assíncrono para comunicação com a API
-│   ├── dados.js               Dados de exemplo em memória (fallback local)
 │   ├── classificacao.js       Regra do RF11, portada do Java
 │   ├── validacao.js           Validação de formulários
 │   ├── app.js                 Navegação, menu recolhível, modal e formatação

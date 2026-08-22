@@ -26,6 +26,9 @@ public class Agendamento {
     private String servicoNome;
     private String barbeiroNome;
 
+    // Preço do serviço (snapshot ou lookup)
+    private java.math.BigDecimal preco = java.math.BigDecimal.ZERO;
+
     // Snapshot da duração do serviço no momento do agendamento (minutos) - usada
     // para checar conflito por sobreposição real de horário mesmo que a duração
     // do serviço mude depois. Ver AgendamentoDAO.verificarConflito.
@@ -166,6 +169,22 @@ public class Agendamento {
 
     public void setMotivoCancelamento(String motivoCancelamento) {
         this.motivoCancelamento = motivoCancelamento;
+    }
+
+    public java.math.BigDecimal getPreco() {
+        return preco;
+    }
+
+    public void setPreco(java.math.BigDecimal preco) {
+        this.preco = preco;
+    }
+
+    public java.math.BigDecimal getValor() {
+        return preco;
+    }
+
+    public void setValor(java.math.BigDecimal valor) {
+        this.preco = valor;
     }
 
     @Override

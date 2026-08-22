@@ -46,6 +46,7 @@ public class AgendamentoDTO {
             this.origemContato = a.getOrigemContato();
             this.status = a.getStatus();
             this.servicoNome = a.getServicoNome();
+            this.preco = a.getPreco();
             this.duracaoMinutos = a.getDuracaoMinutos();
             this.barbeiroNome = a.getBarbeiroNome();
             this.motivoCancelamento = a.getMotivoCancelamento();

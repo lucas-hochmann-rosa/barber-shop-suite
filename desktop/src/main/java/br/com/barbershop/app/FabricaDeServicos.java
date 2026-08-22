@@ -74,4 +74,8 @@ public class FabricaDeServicos {
     public BarbeariaService criarBarbeariaService() {
         return new BarbeariaService(barbeariaDAO);
     }
+
+    public br.com.barbershop.seed.DadosDemonstracaoSeeder criarDadosDemonstracaoSeeder() {
+        return new br.com.barbershop.seed.DadosDemonstracaoSeeder(criarSetupService(), criarCatalogoService(), criarAgendaService(), criarBarbeariaService());
+    }
 }

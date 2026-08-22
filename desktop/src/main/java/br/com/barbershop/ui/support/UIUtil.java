@@ -1,10 +1,12 @@
 package br.com.barbershop.ui.support;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -20,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.Border;
 import javax.swing.text.MaskFormatter;
 
 /**
@@ -44,6 +48,25 @@ public class UIUtil {
 
     private static List<Image> iconesApp;
     private static boolean iconeCarregado = false;
+
+    private static class BordaArredondada extends AbstractBorder {
+        private final Color cor;
+        private final int raio;
+
+        BordaArredondada(Color cor, int raio) {
+            this.cor = cor;
+            this.raio = raio;
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(cor);
+            g2.drawRoundRect(x, y, width - 1, height - 1, raio, raio);
+            g2.dispose();
+        }
+    }
 
     /**
      * Configura o Look & Feel FlatLaf com a paleta de cores e tipografia
@@ -119,6 +142,44 @@ public class UIUtil {
         btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btn.setFocusPainted(false);
         btn.setBorder(BorderFactory.createEmptyBorder(6, 14, 6, 14));
+    }
+
+    /**
+     * Aplica o mesmo tratamento visual dos cartões da web: fundo branco,
+     * borda nebulosa e respiro interno.
+     */
+    public static void aplicarEstiloCartao(JPanel painel) {
+        if (painel == null) return;
+        painel.setBackground(COLOR_BRANCO);
+        Border borda = new BordaArredondada(COLOR_NEBLINA, 8);
+        painel.setBorder(BorderFactory.createCompoundBorder(
+                borda,
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+    }
+
+    public static FlatSVGIcon carregarSvg(String caminho, int width, int height) {
+        try {
+            FlatSVGIcon icon = new FlatSVGIcon(caminho);
+            if (width > 0 && height > 0) {
+                icon = icon.derive(width, height);
+            }
+            return icon;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static void aplicarLogo(JLabel label, int width, int height) {
+        if (label == null) return;
+        FlatSVGIcon icon = carregarSvg("img/logo.svg", width, height);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        if (icon != null) {
+            label.setText("");
+            label.setIcon(icon);
+        } else {
+            label.setIcon(null);
+            label.setText("Barbershop");
+        }
     }
 
     /**
@@ -238,6 +299,10 @@ public class UIUtil {
      * Mostra a imagem de um barbeiro/serviço a partir do Base64 gravado no banco.
      */
     public static void exibirMiniatura(JLabel label, String base64, int width, int height) {
+        exibirMiniatura(label, base64, width, height, null);
+    }
+
+    public static void exibirMiniatura(JLabel label, String base64, int width, int height, String placeholderSvg) {
         int w = width;
         int h = height;
 
@@ -259,9 +324,15 @@ public class UIUtil {
         label.setVerticalAlignment(SwingConstants.CENTER);
 
         if (base64 == null || base64.trim().isEmpty()) {
-            label.setIcon(null);
-            label.setText("Sem imagem");
-            label.setForeground(COLOR_FUMACA);
+            FlatSVGIcon placeholder = placeholderSvg != null ? carregarSvg(placeholderSvg, w, h) : null;
+            if (placeholder != null) {
+                label.setIcon(placeholder);
+                label.setText("");
+            } else {
+                label.setIcon(null);
+                label.setText("Sem imagem");
+                label.setForeground(COLOR_FUMACA);
+            }
             return;
         }
 
@@ -280,9 +351,15 @@ public class UIUtil {
             label.setIcon(new ImageIcon(newImg));
             label.setText("");
         } catch (Exception e) {
-            label.setIcon(null);
-            label.setText("Sem imagem");
-            label.setForeground(COLOR_FUMACA);
+            FlatSVGIcon placeholder = placeholderSvg != null ? carregarSvg(placeholderSvg, w, h) : null;
+            if (placeholder != null) {
+                label.setIcon(placeholder);
+                label.setText("");
+            } else {
+                label.setIcon(null);
+                label.setText("Sem imagem");
+                label.setForeground(COLOR_FUMACA);
+            }
         }
     }
 

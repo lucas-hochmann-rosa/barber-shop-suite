@@ -173,9 +173,20 @@ const Api = (() => {
             return requisicao(`/agenda/${id}/cancelar${query}`, { method: 'POST' });
         },
 
-        async verificarConflito(barbeiroId, dataHora, duracaoMinutos) {
-            const query = `?barbeiroId=${barbeiroId}&dataHora=${encodeURIComponent(dataHora)}&duracaoMinutos=${duracaoMinutos}`;
-            return requisicao(`/agenda/conflito${query}`);
+        async verificarConflito(barbeiroId, dataHora, duracaoMinutos, barbeariaId) {
+            const params = new URLSearchParams({
+                barbeiroId,
+                dataHora,
+                duracaoMinutos
+            });
+            if (barbeariaId) params.append('barbeariaId', barbeariaId);
+            const query = `?${params.toString()}`;
+            const resposta = await requisicao(`/agenda/conflito${query}`);
+            return {
+                ...resposta,
+                conflito: Boolean(resposta.conflito ?? resposta.temConflito),
+                dentroExpediente: Boolean(resposta.dentroExpediente ?? resposta.dentroDoExpediente)
+            };
         },
 
         // Histórico (RF09)

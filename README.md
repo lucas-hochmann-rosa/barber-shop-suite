@@ -47,8 +47,12 @@ java -jar desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar
 java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
 # ou: mvn spring-boot:run -pl api -am (porta 8080)
 
-# 6. Executar o Front-end Web independente
-npx serve web      # acesse http://localhost:3000 (login: lucas / 1234)
+# 6. Opcional: carregar a base de demonstração compartilhada
+java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
+# ou, com a API no ar: curl -X POST http://localhost:8080/api/dev/seed
+
+# 7. Executar o Front-end Web
+npx serve web      # acesse http://localhost:3000 (login demo: barbershop / barbershop)
 ```
 
 ---
@@ -59,7 +63,7 @@ O **Barbershop** é um sistema para controle operacional completo de uma barbear
 
 - **Núcleo Compartilhado (`core`)**: Centraliza as entidades de domínio, persistência JDBC, migrações idempotentes e regras de negócio essenciais (como a regra de classificação RF11 e a validação de sobreposição real de horários RF10), sem acoplamento com interfaces visuais.
 - **Versão Desktop (`desktop`)**: Aplicação desktop em Java Swing (Look & Feel FlatLaf) com bootstrap automático (cadastro inicial vs. login), CRUD de serviços/barbeiros, gestão de agenda em tempo real, painel de relatórios e smoke test operacional (`VerificacaoSistema`).
-- **Versão Web (`web`)**: Front-end moderno em HTML5, CSS3 modular e JavaScript puro, espelhando os fluxos operacionais da barbearia, com destaque para a **régua visual do dia** e o cliente REST integrado.
+- **Versão Web (`web`)**: Front-end moderno em HTML5, CSS3 modular e JavaScript puro, espelhando os fluxos operacionais da barbearia, com destaque para a **régua visual do dia** e o cliente REST integrado à API real.
 - **Back-end Web REST (`api`)**: Aplicação Java Web com Spring Boot 3.2.5 REST, expondo endpoints JSON para autenticação, barbearia, catálogo, agenda, histórico e relatórios.
 
 ---
@@ -94,6 +98,8 @@ O **Barbershop** é um sistema para controle operacional completo de uma barbear
 - Classificação visual de agendamentos por status/proximidade do horário (RF11).
 - Tela de Relatórios: faturamento por período, serviços mais vendidos e ranking de barbeiros.
 - Fotos de barbeiro/serviço guardadas como Base64 direto no banco.
+- Base de demonstração compartilhada entre desktop e web, gravada no mesmo MySQL por gatilhos manuais.
+- Imagens institucionais centralizadas em `web/img`, reutilizadas pelo desktop durante o build.
 - Ícone próprio do aplicativo em todas as janelas.
 - Logging em arquivo (`~/.barbershop/logs/`) e pool de conexões com o banco (HikariCP).
 
@@ -104,6 +110,8 @@ O **Barbershop** é um sistema para controle operacional completo de uma barbear
 - [Arquitetura dos Módulos](#-arquitetura-dos-módulos)
 - [Instruções de Execução por Módulo](#-instruções-de-execução-por-módulo)
 - [Reutilização do Núcleo e Paridade (RF11)](#-reutilização-do-núcleo-e-paridade-rf11)
+- [Dados de Demonstração Compartilhados](#-dados-de-demonstração-compartilhados)
+- [Imagens Compartilhadas](#-imagens-compartilhadas)
 - [Tecnologias](#-tecnologias)
 - [Regras de Construção do Projeto](#-regras-de-construção-do-projeto)
 - [Requisitos](#-requisitos)
@@ -143,6 +151,7 @@ barber-shop-suite/
 │       │   ├── dao/                    # Camada de acesso a dados (JDBC/MySQL), uma classe por entidade
 │       │   │   └── repository/         # Interfaces consumidas pelos services (Repository Pattern)
 │       │   ├── service/                # Regras de negócio (AgendaService, AuthService, CatalogoService, ClassificadorAgenda, RelatorioService)
+│       │   ├── seed/                   # Dados de demonstração compartilhados, sem dependência de Spring ou Swing
 │       │   └── util/                   # Utilitários puros (hash PBKDF2 com salt, parse/formatação de datas, imagens)
 │       ├── main/resources/
 │       │   ├── config.properties       # Configuração de conexão JDBC com o banco MySQL
@@ -156,7 +165,7 @@ barber-shop-suite/
 │   ├── nbactions.xml                   # Perfis de execução/debug para Apache NetBeans
 │   └── src/main/
 │       ├── java/br/com/barbershop/
-│       │   ├── app/                    # Ponto de entrada (Main), FabricaDeServicos e VerificacaoSistema
+│       │   ├── app/                    # Ponto de entrada (Main), FabricaDeServicos, VerificacaoSistema e SeedDemoData
 │       │   ├── ui/                     # Telas Swing (NetBeans GUI Builder + FlatLaf)
 │       │   │   ├── controller/         # Controladores de tela
 │       │   │   └── support/            # Utilitários de UI (ícones, renderizadores de tabela)
@@ -174,8 +183,8 @@ barber-shop-suite/
 │   ├── relatorios.html                 # Relatórios de faturamento, serviços e ranking (RF09)
 │   ├── verificacao-classificacao.html  # Evidência visual da paridade da regra RF11 contra testes JUnit
 │   ├── css/                            # Folhas de estilo (base, layout, componentes, paginas)
-│   ├── js/                             # Lógica de interface, cliente REST (api.js) e dados de demonstração
-│   └── img/                            # Ícones e ilustrações em SVG próprio
+│   ├── js/                             # Lógica de interface e cliente REST (api.js)
+│   └── img/                            # Ícones e ilustrações SVG, fonte única também usada pelo desktop
 │
 └── api/                                # [MÓDULO 4] Back-end Java Web Spring Boot REST
     ├── pom.xml                         # Dependências do Spring Boot Starter Web e core
@@ -183,7 +192,7 @@ barber-shop-suite/
         ├── main/java/br/com/barbershop/api/
         │   ├── Application.java        # Main class do Spring Boot
         │   ├── config/                 # Configuração de beans (ServiceConfig) e CORS/Static (WebMvcConfig)
-        │   ├── controller/             # Controladores REST (Auth, Barbearia, Catalogo, Agenda, Historico, Relatorios)
+        │   ├── controller/             # Controladores REST (Auth, Barbearia, Catalogo, Agenda, Historico, Relatorios, DevSeed)
         │   └── dto/                    # Objetos de transferência de dados (DTOs)
         └── test/java/br/com/barbershop/api/
             └── controller/             # Testes de integração dos endpoints REST via Spring MockMvc
@@ -247,11 +256,13 @@ java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
 
 A API estará disponível em `http://localhost:8080/api/` e servirá automaticamente as páginas do front-end `web/`.
 
+No Apache NetBeans, a ação **Run** do módulo `api` usa `spring-boot:run`, configurado em `api/nbactions.xml`.
+
 ---
 
 ### 4. Módulo `web` (Front-end Web)
 
-Construído com **HTML5, CSS3 modular e JavaScript puro**, com cliente HTTP (`web/js/api.js`) pronto para comunicar com o back-end Spring REST ou rodar de forma autônoma.
+Construído com **HTML5, CSS3 modular e JavaScript puro**, com cliente HTTP (`web/js/api.js`) integrado ao back-end Spring REST. Mesmo quando servido por um servidor estático local, o front-end grava e consulta dados reais em `http://localhost:8080/api`.
 
 #### Como executar:
 
@@ -264,9 +275,11 @@ Construído com **HTML5, CSS3 modular e JavaScript puro**, com cliente HTTP (`we
 - **Opção B (Integrado à API):**
   Basta iniciar o módulo `api` e acessar <http://localhost:8080/agenda.html>.
 
-#### 🔑 Credenciais de Demonstração (Web):
-- **Usuário:** `lucas`
-- **Senha:** `1234`
+#### 🔑 Credenciais de Demonstração:
+- **Usuário:** `barbershop`
+- **Senha:** `barbershop`
+
+Essas credenciais existem quando a base de demonstração é carregada em um banco vazio. Se o fluxo de cadastro inicial for feito manualmente, use o usuário e a senha criados nesse cadastro.
 
 ---
 
@@ -281,11 +294,41 @@ Um dos princípios fundamentais da arquitetura do Barbershop é a preservação 
 
 ---
 
+## 🌱 Dados de Demonstração Compartilhados
+
+A demonstração não usa mais arrays estáticos no front-end. Os dados de exemplo são gravados no MySQL pela classe `br.com.barbershop.seed.DadosDemonstracaoSeeder`, dentro do módulo `core`, usando apenas os services públicos (`SetupService`, `CatalogoService`, `AgendaService` e `BarbeariaService`). Assim, desktop, web e API enxergam exatamente a mesma barbearia, os mesmos serviços, barbeiros, usuários e agendamentos.
+
+A semeadura é sempre manual e segura para repetir: `semearSeNecessario()` só insere dados quando `BarbeariaService.buscarPrimeira()` retorna `null`. Isso preserva o teste do fluxo RF01 com banco vazio.
+
+Formas de carregar:
+
+```bash
+# Pela linha de comando do desktop
+mvn clean package -pl desktop
+java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
+
+# Pela API em ambiente de desenvolvimento
+mvn spring-boot:run -pl api
+curl -X POST http://localhost:8080/api/dev/seed
+```
+
+Também existe um botão **Carregar dados de demonstração** na tela de cadastro inicial do desktop. A base inclui uma barbearia, seis serviços, quatro barbeiros, o usuário `barbershop` com senha `barbershop` hasheada com `HashUtil`, e agendamentos distribuídos para exercitar as classificações da agenda.
+
+---
+
+## 🖼️ Imagens Compartilhadas
+
+Os SVGs de logo, serviços e avatares ficam em um único lugar versionado: `web/img`. O desktop não mantém cópias manuais dessas imagens; durante `generate-resources`, o `maven-resources-plugin` do módulo `desktop` copia `../web/img` para o classpath (`target/classes/img`), e as telas Swing carregam os SVGs com `FlatSVGIcon`.
+
+Essa decisão mantém a identidade visual sincronizada entre web e desktop, evita divergência de assets e ainda permite fallback textual no Swing caso algum ícone não esteja disponível no build.
+
+---
+
 ## 🛠️ Tecnologias
 
 - **Linguagem & Plataforma:** Java 17 · Spring Boot 3.2.5 · HTML5 / CSS3 / JavaScript Vanilla
 - **Build & Módulos:** Apache Maven, monorepo multi-módulo com versões centralizadas no `pom.xml` raiz
-- **Interface Desktop:** Java Swing (Look & Feel [FlatLaf](https://www.formdev.com/flatlaf/) `3.4.1`), telas geradas pelo NetBeans GUI Builder
+- **Interface Desktop:** Java Swing (Look & Feel [FlatLaf](https://www.formdev.com/flatlaf/) `3.4.1` e FlatLaf Extras para SVG), telas geradas pelo NetBeans GUI Builder
 - **Back-end Web:** Spring Boot 3.2.5 REST (Spring MVC, Jackson JSR-310, Bean Validation)
 - **Banco de dados:** MySQL 8 + Driver JDBC (`mysql-connector-j 8.3.0`), pool de conexões [HikariCP](https://github.com/brettwooldridge/HikariCP) `5.1.0`
 - **Logging:** SLF4J + Logback (saída em console e arquivo com rotação)
@@ -296,7 +339,7 @@ Um dos princípios fundamentais da arquitetura do Barbershop é a preservação 
 
 ## 📐 Regras de Construção do Projeto
 
-- Identificadores (classes, métodos, variáveis, tabelas e colunas do banco) ficam em português: é o vocabulário natural do domínio e o sistema é feito para uso local/BR.
+- Identificadores (classes, métodos, variáveis, rotas, contratos JSON, tabelas e colunas do banco) usam inglês quando representam lógica técnica nova; nomes de domínio herdados em português são mantidos quando já fazem parte do contrato do projeto.
 - Comentários no código ficam reservados para decisões não óbvias: o "porquê", não o "o quê".
 - Textos de interface (telas Swing e páginas Web) ficam sempre em português.
 - Nenhuma credencial é commitada: `config.properties` traz apenas defaults de ambiente local (senha vazia), com suporte a sobrescrita por variável de ambiente para outros ambientes.

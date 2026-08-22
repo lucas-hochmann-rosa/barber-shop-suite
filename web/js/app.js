@@ -42,6 +42,58 @@ const Formato = {
     }
 };
 
+/* Dados vindos da API */
+
+const OrigemContato = ['INSTAGRAM', 'WHATSAPP', 'PRESENCIAL', 'TELEFONE', 'OUTRO'];
+
+function normalizarDataHora(valor) {
+    if (valor instanceof Date) return valor;
+    return valor ? new Date(valor) : null;
+}
+
+function normalizarAgendamento(a) {
+    return {
+        ...a,
+        dataHora: normalizarDataHora(a.dataHora),
+        valor: Number(a.valor ?? a.preco ?? 0),
+        preco: Number(a.preco ?? a.valor ?? 0),
+        duracaoMinutos: Number(a.duracaoMinutos || 30)
+    };
+}
+
+function imagemBase64ParaSrc(valor) {
+    if (!valor) return null;
+    if (String(valor).startsWith('data:')) return valor;
+    return `data:image/png;base64,${valor}`;
+}
+
+function imagemServico(servico) {
+    if (servico && servico.imagemBase64) return imagemBase64ParaSrc(servico.imagemBase64);
+    const mapa = {
+        'corte masculino': 'img/servico-corte.svg',
+        'barba tradicional': 'img/servico-barba.svg',
+        'corte + barba': 'img/servico-combo.svg',
+        'pezinho': 'img/servico-pezinho.svg',
+        'sobrancelha': 'img/servico-sobrancelha.svg',
+        'platinado': 'img/servico-platinado.svg'
+    };
+    return mapa[String(servico && servico.nome || '').toLowerCase()] || 'img/servico-corte.svg';
+}
+
+function imagemBarbeiro(barbeiro) {
+    if (barbeiro && barbeiro.imagemBase64) return imagemBase64ParaSrc(barbeiro.imagemBase64);
+    const indice = barbeiro && barbeiro.id ? ((Number(barbeiro.id) - 1) % 4) + 1 : 1;
+    return `img/avatar-${indice}.svg`;
+}
+
+function mostrarErroNaTela(seletor, erro, fallback) {
+    const painel = document.querySelector(seletor);
+    if (!painel) return;
+    painel.hidden = false;
+    painel.className = 'aviso aviso--erro';
+    painel.textContent = erro && erro.message ? erro.message : fallback;
+}
+
 /* Menu recolhível */
 
 const Menu = {
@@ -173,26 +225,87 @@ const Modal = {
 /* Sessão */
 
 const Sessao = {
-    CHAVE: 'barbershop.usuario',
+    CHAVE_USUARIO: 'barbershop.usuario',
+    CHAVE_USUARIO_ID: 'barbershop.usuarioId',
+    CHAVE_BARBEARIA_ID: 'barbershop.barbeariaId',
+    CHAVE_BARBEARIA_NOME: 'barbershop.barbeariaNome',
 
-    entrar(usuario) {
+    entrar(usuario, dados = {}) {
         try {
-            sessionStorage.setItem(this.CHAVE, usuario);
+            sessionStorage.setItem(this.CHAVE_USUARIO, usuario);
+            if (dados.usuarioId) sessionStorage.setItem(this.CHAVE_USUARIO_ID, String(dados.usuarioId));
+            if (dados.barbeariaId) sessionStorage.setItem(this.CHAVE_BARBEARIA_ID, String(dados.barbeariaId));
+            if (dados.barbeariaNome) sessionStorage.setItem(this.CHAVE_BARBEARIA_NOME, dados.barbeariaNome);
         } catch (erro) {
             // Navegar com armazenamento bloqueado não deve quebrar a navegação
         }
+        this.atualizarVisual();
     },
 
     sair() {
         try {
-            sessionStorage.removeItem(this.CHAVE);
+            sessionStorage.removeItem(this.CHAVE_USUARIO);
+            sessionStorage.removeItem(this.CHAVE_USUARIO_ID);
+            sessionStorage.removeItem(this.CHAVE_BARBEARIA_ID);
+            sessionStorage.removeItem(this.CHAVE_BARBEARIA_NOME);
         } catch (erro) {
             /* ignora */
         }
         window.location.href = 'index.html';
     },
 
+    usuario() {
+        try {
+            return sessionStorage.getItem(this.CHAVE_USUARIO);
+        } catch (erro) {
+            return null;
+        }
+    },
+
+    usuarioId() {
+        try {
+            return Number(sessionStorage.getItem(this.CHAVE_USUARIO_ID) || 0);
+        } catch (erro) {
+            return 0;
+        }
+    },
+
+    barbeariaId() {
+        try {
+            return Number(sessionStorage.getItem(this.CHAVE_BARBEARIA_ID) || 0);
+        } catch (erro) {
+            return 0;
+        }
+    },
+
+    barbeariaNome() {
+        try {
+            return sessionStorage.getItem(this.CHAVE_BARBEARIA_NOME);
+        } catch (erro) {
+            return null;
+        }
+    },
+
+    atualizarVisual() {
+        const nome = this.barbeariaNome();
+        if (nome) {
+            document.querySelectorAll('.barra-lateral__barbearia')
+                .forEach((e) => { e.textContent = nome; });
+        }
+
+        const usuario = this.usuario();
+        if (usuario) {
+            document.querySelectorAll('.topo__avatar')
+                .forEach((e) => {
+                    e.textContent = Formato.iniciais(usuario);
+                    e.title = usuario;
+                });
+        }
+    },
+
     iniciar() {
+        this.atualizarVisual();
+
         const sair = document.querySelector('[data-sair]');
         if (sair) {
             sair.addEventListener('click', (evento) => {

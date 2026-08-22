@@ -130,4 +130,9 @@ public class ServiceConfig {
     public BarbeariaService barbeariaService() {
         return new BarbeariaService(barbeariaDAO);
     }
+
+    @Bean
+    public br.com.barbershop.seed.DadosDemonstracaoSeeder dadosDemonstracaoSeeder() {
+        return new br.com.barbershop.seed.DadosDemonstracaoSeeder(setupService(), catalogoService(), agendaService(), barbeariaService());
+    }
 }

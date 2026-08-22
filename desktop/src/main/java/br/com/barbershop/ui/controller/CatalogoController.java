@@ -91,7 +91,7 @@ public class CatalogoController {
 
                 JLabel lblImg = new JLabel();
                 lblImg.setAlignmentX(Component.CENTER_ALIGNMENT);
-                UIUtil.exibirMiniatura(lblImg, s.getFotoCaminho(), 110, 80);
+                UIUtil.exibirMiniatura(lblImg, s.getFotoCaminho(), 110, 80, placeholderServico(s));
 
                 JLabel lblNome = new JLabel(s.getNome());
                 lblNome.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -126,6 +126,16 @@ public class CatalogoController {
                     "Erro ao carregar grid de serviços:\n" + e.getMessage(),
                     "Erro", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private String placeholderServico(Servico servico) {
+        String nome = servico != null && servico.getNome() != null ? servico.getNome().toLowerCase(Locale.ROOT) : "";
+        if (nome.contains("barba") && nome.contains("corte")) return "img/servico-combo.svg";
+        if (nome.contains("barba")) return "img/servico-barba.svg";
+        if (nome.contains("pezinho")) return "img/servico-pezinho.svg";
+        if (nome.contains("sobrancelha")) return "img/servico-sobrancelha.svg";
+        if (nome.contains("platinado")) return "img/servico-platinado.svg";
+        return "img/servico-corte.svg";
     }
 
     /**

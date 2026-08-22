@@ -1,52 +1,45 @@
-/* RF09: filtros, ordenação e paginação do histórico
-
-   Todos os filtros são aplicados em JavaScript sobre os dados já
-   carregados; nada é buscado de novo. */
+/* RF09: filtros via API, ordenação e paginação do histórico */
 
 const Historico = {
-
     POR_PAGINA: 12,
 
     filtrados: [],
     pagina: 1,
     ordem: { coluna: 'dataHora', crescente: false },
+    barbeiros: [],
 
-    /* Filtros  */
-
-    preencherBarbeiros() {
+    async preencherBarbeiros() {
         const selecao = document.getElementById('filtroBarbeiro');
+        this.barbeiros = await Api.listarBarbeiros(Sessao.barbeariaId());
         selecao.innerHTML = '<option value="">Todos</option>'
-            + Dados.barbeiros.map((b) => `<option value="${b.id}">${b.nome}</option>`).join('');
+            + this.barbeiros.map((b) => `<option value="${b.id}">${b.nome}</option>`).join('');
     },
 
-    aplicarFiltros() {
+    async aplicarFiltros() {
         const de = document.getElementById('filtroDe').value;
         const ate = document.getElementById('filtroAte').value;
         const barbeiro = document.getElementById('filtroBarbeiro').value;
         const status = document.getElementById('filtroStatus').value;
 
-        const inicio = de ? new Date(de + 'T00:00:00') : null;
-        // "até" é inclusivo: vale o dia inteiro
-        const fim = ate ? new Date(ate + 'T23:59:59') : null;
-
-        this.filtrados = Dados.agendamentos.filter((a) => {
-            if (inicio && a.dataHora < inicio) return false;
-            if (fim && a.dataHora > fim) return false;
-            if (barbeiro && a.barbeiroId !== Number(barbeiro)) return false;
-            if (status && a.status !== status) return false;
-            return true;
-        });
-
-        this.pagina = 1;
-        this.ordenar();
+        try {
+            const dados = await Api.consultarHistorico({
+                inicio: de,
+                fim: ate,
+                barbeiroId: barbeiro,
+                status
+            });
+            this.filtrados = dados.map(normalizarAgendamento);
+            this.pagina = 1;
+            this.ordenar();
+        } catch (erro) {
+            mostrarErroNaTela('#avisoHistorico', erro, 'Não foi possível consultar o histórico.');
+        }
     },
 
     limpar() {
         document.getElementById('formFiltros').reset();
         this.aplicarFiltros();
     },
-
-    /* Ordenação */
 
     ordenar() {
         const { coluna, crescente } = this.ordem;
@@ -90,8 +83,6 @@ const Historico = {
             }
         });
     },
-
-    /* Desenho da tabela */
 
     desenhar() {
         const corpo = document.getElementById('corpoHistorico');
@@ -152,21 +143,22 @@ const Historico = {
         this.desenhar();
     },
 
-    /* Partida */
-
-    iniciar() {
+    async iniciar() {
         if (!document.getElementById('corpoHistorico')) return;
 
-        this.preencherBarbeiros();
+        try {
+            await this.preencherBarbeiros();
 
-        // Período padrão: últimos 30 dias até hoje
-        const hoje = new Date();
-        const trintaDias = new Date();
-        trintaDias.setDate(trintaDias.getDate() - 30);
-        document.getElementById('filtroDe').value = this.paraCampo(trintaDias);
-        document.getElementById('filtroAte').value = this.paraCampo(hoje);
+            const hoje = new Date();
+            const trintaDias = new Date();
+            trintaDias.setDate(trintaDias.getDate() - 30);
+            document.getElementById('filtroDe').value = this.paraCampo(trintaDias);
+            document.getElementById('filtroAte').value = this.paraCampo(hoje);
 
-        this.aplicarFiltros();
+            await this.aplicarFiltros();
+        } catch (erro) {
+            mostrarErroNaTela('#avisoHistorico', erro, 'Não foi possível carregar o histórico.');
+        }
 
         document.getElementById('formFiltros').addEventListener('submit', (evento) => {
             evento.preventDefault();
