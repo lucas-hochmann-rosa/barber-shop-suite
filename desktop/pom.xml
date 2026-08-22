@@ -71,7 +71,7 @@
                             <outputDirectory>${project.build.outputDirectory}/img</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/../web/img</directory>
+                                    <directory>${project.basedir}/../shared-assets/img</directory>
                                     <filtering>false</filtering>
                                 </resource>
                             </resources>

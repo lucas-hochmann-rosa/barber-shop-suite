@@ -51,8 +51,9 @@ java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
 java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
 # ou, com a API no ar: curl -X POST http://localhost:8080/api/dev/seed
 
-# 7. Executar o Front-end Web
-npx serve web      # acesse http://localhost:3000 (login demo: barbershop / barbershop)
+# 7. Executar o Front-end Web estático pela raiz do repositório
+python -m http.server 5500
+# acesse http://localhost:5500/web/index.html (login demo: barbershop / barbershop)
 ```
 
 ---
@@ -99,7 +100,7 @@ O **Barbershop** é um sistema para controle operacional completo de uma barbear
 - Tela de Relatórios: faturamento por período, serviços mais vendidos e ranking de barbeiros.
 - Fotos de barbeiro/serviço guardadas como Base64 direto no banco.
 - Base de demonstração compartilhada entre desktop e web, gravada no mesmo MySQL por gatilhos manuais.
-- Imagens institucionais centralizadas em `web/img`, reutilizadas pelo desktop durante o build.
+- Imagens institucionais centralizadas em `shared-assets/img`, reutilizadas pela web, API e desktop.
 - Ícone próprio do aplicativo em todas as janelas.
 - Logging em arquivo (`~/.barbershop/logs/`) e pool de conexões com o banco (HikariCP).
 
@@ -143,6 +144,9 @@ barber-shop-suite/
 │   ├── screenshots/                    # Prints do sistema usados na documentação
 │   └── wireframes/                     # Wireframes em SVG puro para desktop e web
 │
+├── shared-assets/
+│   └── img/                            # Fonte oficial dos SVGs de marca, serviços e avatares
+│
 ├── core/                               # [MÓDULO 1] Núcleo de regras de negócio compartilhado (Java)
 │   ├── pom.xml
 │   └── src/
@@ -182,8 +186,7 @@ barber-shop-suite/
 │   ├── relatorios.html                 # Relatórios de faturamento, serviços e ranking (RF09)
 │   ├── verificacao-classificacao.html  # Evidência visual da paridade da regra RF11 contra testes JUnit
 │   ├── css/                            # Folhas de estilo (base, layout, componentes, paginas)
-│   ├── js/                             # Lógica de interface e cliente REST (api.js)
-│   └── img/                            # Ícones e ilustrações SVG, fonte única também usada pelo desktop
+│   └── js/                             # Lógica de interface e cliente REST (api.js)
 │
 └── api/                                # [MÓDULO 4] Back-end Java Web Spring Boot REST
     ├── pom.xml                         # Dependências do Spring Boot Starter Web e core
@@ -267,9 +270,9 @@ Construído com **HTML5, CSS3 modular e JavaScript puro**, com cliente HTTP (`we
 
 - **Opção A (Servidor estático local):**
   ```bash
-  npx serve web
+  python -m http.server 5500
   ```
-  Acesse <http://localhost:3000>.
+  Acesse <http://localhost:5500/web/index.html>.
 
 - **Opção B (Integrado à API):**
   Basta iniciar o módulo `api` e acessar <http://localhost:8080/agenda.html>.
@@ -317,9 +320,9 @@ Também existe um botão **Carregar dados de demonstração** na tela de cadastr
 
 ## 🖼️ Imagens Compartilhadas
 
-Os SVGs de logo, serviços e avatares ficam em um único lugar versionado: `web/img`. O desktop não mantém cópias manuais dessas imagens; durante `generate-resources`, o `maven-resources-plugin` do módulo `desktop` copia `../web/img` para o classpath (`target/classes/img`), e as telas Swing carregam os SVGs com `FlatSVGIcon`.
+Os SVGs de logo, serviços e avatares ficam em um único lugar versionado: `shared-assets/img`. A web referencia esses arquivos por `/shared-assets/img/...`, a API expõe esse caminho como recurso estático em desenvolvimento, e o desktop não mantém cópias manuais dessas imagens; durante `generate-resources`, o `maven-resources-plugin` do módulo `desktop` copia `../shared-assets/img` para o classpath (`target/classes/img`), e as telas Swing carregam os SVGs com `FlatSVGIcon`.
 
-Essa decisão mantém a identidade visual sincronizada entre web e desktop, evita divergência de assets e ainda permite fallback textual no Swing caso algum ícone não esteja disponível no build.
+Essa decisão mantém a identidade visual sincronizada entre web, API e desktop, evita divergência de assets e ainda permite fallback textual no Swing caso algum ícone não esteja disponível no build.
 
 ---
 

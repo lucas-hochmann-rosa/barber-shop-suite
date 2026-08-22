@@ -72,7 +72,7 @@ const Relatorios = {
         podio.innerHTML = ordenados.map((item, indice) => `
             <li class="podio__lugar">
                 <span class="podio__posicao">${indice + 1}º</span>
-                <img class="podio__foto" src="img/avatar-${(indice % 4) + 1}.svg" alt="" width="96" height="96">
+                <img class="podio__foto" src="/shared-assets/img/avatar-${(indice % 4) + 1}.svg" alt="" width="96" height="96">
                 <span class="podio__nome">${item.nome}</span>
                 <strong class="podio__numero">${item.quantidade} atendimentos</strong>
                 <span class="texto-pequeno texto-secundario valor">${Formato.moeda(item.total)}</span>

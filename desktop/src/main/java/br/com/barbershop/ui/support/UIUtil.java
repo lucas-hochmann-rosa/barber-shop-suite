@@ -186,7 +186,7 @@ public class UIUtil {
     }
 
     /**
-     * Ícone do app, derivado da mesma logo SVG centralizada em web/img.
+     * Ícone do app, derivado da mesma logo SVG centralizada em shared-assets/img.
      */
     public static void aplicarIcone(Window janela) {
         if (!iconeCarregado) {
