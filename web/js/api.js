@@ -181,7 +181,12 @@ const Api = (() => {
             });
             if (barbeariaId) params.append('barbeariaId', barbeariaId);
             const query = `?${params.toString()}`;
-            return requisicao(`/agenda/conflito${query}`);
+            const resposta = await requisicao(`/agenda/conflito${query}`);
+            return {
+                ...resposta,
+                conflito: Boolean(resposta.conflito ?? resposta.temConflito),
+                dentroExpediente: Boolean(resposta.dentroExpediente ?? resposta.dentroDoExpediente)
+            };
         },
 
         // Histórico (RF09)
