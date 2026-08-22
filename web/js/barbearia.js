@@ -7,6 +7,30 @@ const TelaBarbearia = {
     servicos: [],
     barbeiros: [],
     agendamentos: [],
+    eventosRegistrados: false,
+
+    elementosPrincipais() {
+        return [
+            document.querySelector('.abas'),
+            document.getElementById('painelDados'),
+            document.getElementById('painelServicos'),
+            document.getElementById('painelBarbeiros')
+        ].filter(Boolean);
+    },
+
+    mostrarSetupInicial() {
+        const painel = document.getElementById('painelSetupInicial');
+        painel.hidden = false;
+        this.elementosPrincipais().forEach((elemento) => { elemento.hidden = true; });
+        document.getElementById('formSetupInicial').addEventListener('submit', this.salvarSetupInicial);
+    },
+
+    mostrarTelaNormal() {
+        const painel = document.getElementById('painelSetupInicial');
+        if (painel) painel.hidden = true;
+        const abas = document.querySelector('.abas');
+        if (abas) abas.hidden = false;
+    },
 
     trocarAba(nome) {
         const paineis = {
@@ -91,6 +115,58 @@ const TelaBarbearia = {
             self.avisar('Dados da barbearia atualizados.');
         } catch (erro) {
             self.avisar(erro.message || 'Não foi possível atualizar os dados da barbearia.', 'erro');
+        }
+    },
+
+    async salvarSetupInicial(evento) {
+        evento.preventDefault();
+        const self = TelaBarbearia;
+        const formulario = document.getElementById('formSetupInicial');
+        Validacao.limparTodos(formulario);
+
+        const nome = document.getElementById('setupNome');
+        const abertura = document.getElementById('setupAbertura');
+        const fechamento = document.getElementById('setupFechamento');
+        const usuario = document.getElementById('setupUsuario');
+        const senha = document.getElementById('setupSenha');
+
+        let valido = true;
+        if (!Validacao.obrigatorio(nome, 'Informe o nome da barbearia.')) valido = false;
+        if (!Validacao.obrigatorio(abertura, 'Informe o horário de abertura.')) valido = false;
+        if (!Validacao.obrigatorio(fechamento, 'Informe o horário de fechamento.')) valido = false;
+        if (!Validacao.obrigatorio(usuario, 'Informe o usuário administrador.')) valido = false;
+        if (!Validacao.obrigatorio(senha, 'Informe a senha do administrador.')) valido = false;
+
+        if (abertura.value && fechamento.value && abertura.value >= fechamento.value) {
+            Validacao.marcarErro(abertura, 'A abertura deve ser antes do fechamento.');
+            valido = false;
+        }
+
+        if (!valido) return;
+
+        try {
+            await Api.setupInicial({
+                nomeBarbearia: nome.value.trim(),
+                horarioAbertura: abertura.value,
+                horarioFechamento: fechamento.value,
+                loginAdmin: usuario.value.trim(),
+                senhaAdmin: senha.value
+            });
+
+            const sessao = await Api.obterSessao();
+            Sessao.entrar(usuario.value.trim(), {
+                barbeariaId: sessao.barbeariaId,
+                barbeariaNome: sessao.barbeariaNome
+            });
+            self.mostrarTelaNormal();
+            await self.carregarTudo();
+            self.carregarDados();
+            self.desenharServicos();
+            self.desenharBarbeiros();
+            self.trocarAba('dados');
+            self.avisar('Configuração inicial concluída.', 'sucesso');
+        } catch (erro) {
+            self.avisar(erro.message || 'Não foi possível concluir a configuração inicial.', 'erro');
         }
     },
 
@@ -274,18 +350,9 @@ const TelaBarbearia = {
         }
     },
 
-    async iniciar() {
-        if (!document.getElementById('painelServicos')) return;
-
-        try {
-            await this.carregarTudo();
-            this.carregarDados();
-            this.desenharServicos();
-            this.desenharBarbeiros();
-            this.trocarAba('servicos');
-        } catch (erro) {
-            this.avisar(erro.message || 'Não foi possível carregar os dados da barbearia.', 'erro');
-        }
+    registrarEventos() {
+        if (this.eventosRegistrados) return;
+        this.eventosRegistrados = true;
 
         document.querySelectorAll('.aba').forEach((aba) => {
             aba.addEventListener('click', () => this.trocarAba(aba.dataset.aba));
@@ -310,6 +377,29 @@ const TelaBarbearia = {
             const excluir = evento.target.closest('[data-excluir]');
             if (excluir) return this.excluir(excluir.dataset.excluir, excluir.dataset.id);
         });
+    },
+
+    async iniciar() {
+        if (!document.getElementById('painelServicos')) return;
+
+        this.registrarEventos();
+
+        try {
+            const sessao = await Api.obterSessao();
+            if (!sessao.sistemaConfigurado) {
+                this.mostrarSetupInicial();
+                return;
+            }
+
+            this.mostrarTelaNormal();
+            await this.carregarTudo();
+            this.carregarDados();
+            this.desenharServicos();
+            this.desenharBarbeiros();
+            this.trocarAba('servicos');
+        } catch (erro) {
+            this.avisar(erro.message || 'Não foi possível carregar os dados da barbearia.', 'erro');
+        }
     }
 };
 
