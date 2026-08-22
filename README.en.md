@@ -47,8 +47,12 @@ java -jar desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar
 java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
 # or: mvn spring-boot:run -pl api -am (port 8080)
 
-# 6. Run the Web Front-end
-npx serve web      # access http://localhost:3000 (demo login: lucas / 1234)
+# 6. Optional: load the shared demo database
+java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
+# or, with the API running: curl -X POST http://localhost:8080/api/dev/seed
+
+# 7. Run the Web Front-end
+npx serve web      # access http://localhost:3000 (demo login: barbershop / barbershop)
 ```
 
 ---
@@ -59,7 +63,7 @@ npx serve web      # access http://localhost:3000 (demo login: lucas / 1234)
 
 - **Shared Core (`core`)**: Centralizes domain entities, JDBC persistence, idempotent migrations, and core business rules (such as RF11 visual classification and RF10 real time-overlap conflict validation), decoupled from any visual UI.
 - **Desktop Application (`desktop`)**: Built with Java Swing (FlatLaf Look & Feel) featuring automatic bootstrap, services/barbers CRUD, real-time schedule management, reports dashboard, and an operational smoke test (`VerificacaoSistema`).
-- **Web Version (`web`)**: Modern static front-end in HTML5, CSS3, and JavaScript, featuring an **interactive daily schedule timeline** and REST client integration (`web/js/api.js`).
+- **Web Version (`web`)**: Modern static front-end in HTML5, CSS3, and JavaScript, featuring an **interactive daily schedule timeline** and real REST client integration (`web/js/api.js`).
 - **Web REST Back-end (`api`)**: Java Web application with Spring Boot 3.2.5 REST, exposing JSON endpoints for authentication, barbershop management, catalog, scheduling, history, and analytics.
 
 ---
@@ -83,20 +87,22 @@ barber-shop-suite/
 │       │   ├── model/                  # Domain POJOs
 │       │   ├── dao/                    # JDBC/MySQL access layer (Repository Pattern)
 │       │   ├── service/                # Business services (Agenda, Auth, Catalogo, Classificador, Relatorio)
+│       │   ├── seed/                   # Shared demo data, independent from Spring and Swing
 │       │   └── util/                   # Security hashing and date utilities
 │       └── test/java/                  # 52 unit tests with in-memory fake repositories
 │
 ├── desktop/                            # [MODULE 2] Desktop Java Swing interface (FlatLaf)
 │   ├── pom.xml
 │   └── src/main/java/br/com/barbershop/
-│       ├── app/                        # Main entry point, ServiceFactory, and SystemVerification
+│       ├── app/                        # Main entry point, ServiceFactory, SystemVerification, and SeedDemoData
 │       └── ui/                         # Swing views and controllers
 │
 ├── web/                                # [MODULE 3] Front-end Web (HTML5, CSS3, JavaScript)
 │   ├── index.html, agenda.html, agendamento.html, barbearia.html, historico.html, relatorios.html
 │   ├── verificacao-classificacao.html  # Visual runner for RF11 parity verification
 │   ├── css/                            # Modular styles
-│   └── js/                             # UI logic, client REST (api.js), and demo data
+│   ├── js/                             # UI logic and REST client (api.js)
+│   └── img/                            # Single source for SVG assets reused by the desktop build
 │
 └── api/                                # [MODULE 4] Spring Boot 3.2.5 REST API
     ├── pom.xml
@@ -104,10 +110,94 @@ barber-shop-suite/
         ├── main/java/br/com/barbershop/api/
         │   ├── Application.java
         │   ├── config/                 # ServiceConfig and WebMvcConfig (CORS/Static)
-        │   ├── controller/             # REST Controllers (Auth, Barbearia, Catalogo, Agenda, Historico, Relatorios)
+        │   ├── controller/             # REST Controllers (Auth, Barbearia, Catalogo, Agenda, Historico, Relatorios, DevSeed)
         │   └── dto/                    # Data Transfer Objects
         └── test/java/                  # 14 MockMvc integration tests
 ```
+
+---
+
+## 🚀 Running Each Module
+
+### 1. `core`
+
+Shared domain and data-access library consumed by the desktop app and the API:
+
+```bash
+mvn test -pl core
+```
+
+### 2. `desktop`
+
+Requires JDK 17+ and MySQL 8:
+
+```bash
+docker compose up -d
+mvn clean package -pl desktop
+java -jar desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar
+```
+
+Apache NetBeans can run the `desktop` module through its `nbactions.xml`.
+
+### 3. `api`
+
+```bash
+mvn spring-boot:run -pl api
+# or
+mvn clean package -pl api
+java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
+```
+
+The API is available at `http://localhost:8080/api/` and also serves the `web/` front-end. In Apache NetBeans, the `api` module Run action is bound to `spring-boot:run` through `api/nbactions.xml`.
+
+### 4. `web`
+
+```bash
+npx serve web
+```
+
+Access <http://localhost:3000>. The static front-end still reads and writes real data through `http://localhost:8080/api`.
+
+Demo credentials after loading the demo database:
+
+- **User:** `barbershop`
+- **Password:** `barbershop`
+
+If the initial setup flow is completed manually, use the credentials created in that setup.
+
+---
+
+## 🔄 Shared Core and RF11 Parity
+
+The RF11 schedule classification rule lives in the shared `core` module through `br.com.barbershop.service.ClassificadorAgenda`. The web version mirrors the same rule in `web/js/classificacao.js`, and `web/verificacao-classificacao.html` runs the browser-side parity checks against the same classification scenarios covered by JUnit.
+
+---
+
+## 🌱 Shared Demo Data
+
+The web front-end no longer uses static JavaScript arrays as its data source. Demo data is written to MySQL by `br.com.barbershop.seed.DadosDemonstracaoSeeder` in the `core` module, using only public services (`SetupService`, `CatalogoService`, `AgendaService`, and `BarbeariaService`). That keeps desktop, web, and API pointed at the same barbershop, services, barbers, users, and appointments.
+
+Seeding is manual and idempotent: `semearSeNecessario()` only inserts data when `BarbeariaService.buscarPrimeira()` returns `null`, preserving the empty-database RF01 setup scenario.
+
+```bash
+# Desktop command-line seed
+mvn clean package -pl desktop
+java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
+
+# Development API seed
+mvn spring-boot:run -pl api
+curl -X POST http://localhost:8080/api/dev/seed
+```
+
+There is also a **Carregar dados de demonstração** button in the desktop initial setup screen. The seed includes one barbershop, six services, four barbers, the `barbershop` user with a real `HashUtil` password hash, and appointments distributed across RF11 classifications.
+
+---
+
+## 🖼️ Shared Images
+
+Logo, service, and avatar SVG files have a single versioned source: `web/img`. The desktop module does not keep manual copies. During `generate-resources`, `maven-resources-plugin` copies `../web/img` into the desktop classpath (`target/classes/img`), and Swing screens load those SVGs through `FlatSVGIcon`.
+
+This keeps the visual identity aligned across web and desktop, avoids asset drift, and preserves a text fallback in Swing when an icon cannot be found in the build.
 
 ---
 
@@ -115,7 +205,7 @@ barber-shop-suite/
 
 - **Platform:** Java 17 · Spring Boot 3.2.5 · HTML5 / CSS3 / Vanilla JavaScript
 - **Build System:** Apache Maven (multi-module monorepo)
-- **Desktop UI:** Java Swing (FlatLaf `3.4.1`)
+- **Desktop UI:** Java Swing (FlatLaf `3.4.1` and FlatLaf Extras for SVG rendering)
 - **Web Back-end:** Spring Boot 3.2.5 REST (Spring MVC, Jackson JSR-310)
 - **Database:** MySQL 8 + JDBC (`mysql-connector-j 8.3.0`), HikariCP `5.1.0`
 - **Testing:** JUnit 5 (Jupiter) & Spring MockMvc (66 automated tests)
