@@ -25,6 +25,7 @@ public class TelaLogin extends javax.swing.JFrame {
         UIUtil.estilizarBotaoPrimario(btnEntrar);
         UIUtil.aplicarIcone(this);
         this.sessionService = new FabricaDeServicos().criarSessionService();
+        pack();
         setLocationRelativeTo(null);
     }
 

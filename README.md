@@ -170,8 +170,7 @@ barber-shop-suite/
 │       │   │   ├── controller/         # Controladores de tela
 │       │   │   └── support/            # Utilitários de UI (ícones, renderizadores de tabela)
 │       └── resources/
-│           ├── logback.xml             # Configuração de logging
-│           └── icon.ico                # Ícone nativo do aplicativo
+│           └── logback.xml             # Configuração de logging
 │
 ├── web/                                # [MÓDULO 3] Front-end Web independente (HTML, CSS e JavaScript puros)
 │   ├── README.md                       # Documentação própria do módulo web

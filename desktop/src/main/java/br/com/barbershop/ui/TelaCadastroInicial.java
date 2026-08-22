@@ -34,6 +34,7 @@ public class TelaCadastroInicial extends javax.swing.JFrame {
         initComponents();
         aplicarEstilos();
         UIUtil.aplicarIcone(this);
+        pack();
         setLocationRelativeTo(null);
     }
 
