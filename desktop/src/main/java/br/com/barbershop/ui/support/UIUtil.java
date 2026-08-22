@@ -14,8 +14,6 @@ import java.awt.RenderingHints;
 import java.awt.Taskbar;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -151,10 +149,15 @@ public class UIUtil {
     public static void aplicarEstiloCartao(JPanel painel) {
         if (painel == null) return;
         painel.setBackground(COLOR_BRANCO);
-        Border borda = new BordaArredondada(COLOR_NEBLINA, 8);
+        Border bordaOriginal = painel.getBorder();
+        Border bordaCartao = new BordaArredondada(COLOR_NEBLINA, 8);
+        Border respiro = BorderFactory.createEmptyBorder(10, 10, 10, 10);
+        Border conteudo = bordaOriginal != null
+                ? BorderFactory.createCompoundBorder(bordaOriginal, respiro)
+                : respiro;
         painel.setBorder(BorderFactory.createCompoundBorder(
-                borda,
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+                bordaCartao,
+                conteudo));
     }
 
     public static FlatSVGIcon carregarSvg(String caminho, int width, int height) {
@@ -183,16 +186,11 @@ public class UIUtil {
     }
 
     /**
-     * Ícone do app (src/main/resources/icon.ico), aplicado em toda janela.
+     * Ícone do app, derivado da mesma logo SVG centralizada em shared-assets/img.
      */
     public static void aplicarIcone(Window janela) {
         if (!iconeCarregado) {
-            try (InputStream in = UIUtil.class.getClassLoader().getResourceAsStream("icon.ico")) {
-                BufferedImage original = in != null ? IcoDecoder.lerMaiorFrame(in) : null;
-                iconesApp = original != null ? gerarTamanhosDeIcone(original) : null;
-            } catch (IOException ignored) {
-                iconesApp = null;
-            }
+            iconesApp = gerarIconesDoSvg("img/logo.svg");
             iconeCarregado = true;
             aplicarIconeNaTaskbar(iconesApp == null || iconesApp.isEmpty() ? null : iconesApp.get(iconesApp.size() - 1));
         }
@@ -201,17 +199,19 @@ public class UIUtil {
         }
     }
 
-    private static List<Image> gerarTamanhosDeIcone(BufferedImage original) {
+    private static List<Image> gerarIconesDoSvg(String caminho) {
         List<Image> resultado = new ArrayList<>();
         for (int tamanho : TAMANHOS_ICONE) {
-            BufferedImage escalado = new BufferedImage(tamanho, tamanho, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2 = escalado.createGraphics();
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            FlatSVGIcon svg = carregarSvg(caminho, tamanho, tamanho);
+            if (svg == null) {
+                return null;
+            }
+            BufferedImage imagem = new BufferedImage(tamanho, tamanho, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = imagem.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.drawImage(original, 0, 0, tamanho, tamanho, null);
+            svg.paintIcon(null, g2, 0, 0);
             g2.dispose();
-            resultado.add(escalado);
+            resultado.add(imagem);
         }
         return resultado;
     }

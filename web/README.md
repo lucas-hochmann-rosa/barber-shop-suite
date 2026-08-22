@@ -6,16 +6,16 @@ Versão web do Barbershop, feita com **HTML, CSS e JavaScript puros**: sem frame
 
 ## Como abrir
 
-Os arquivos são estáticos, então abrir `index.html` direto no navegador funciona. Mesmo assim, prefira servir por HTTP ou através da API Spring REST:
+Os arquivos são estáticos, mas os SVGs compartilhados ficam fora da pasta `web`, em `shared-assets/img`. Por isso, prefira servir a raiz do repositório por HTTP ou abrir pela API Spring REST:
 
 ```bash
-cd web
-python -m http.server 8000
+cd ..
+python -m http.server 5500
 ```
 
-E acesse <http://localhost:8000>.
+E acesse <http://localhost:5500/web/index.html>.
 
-**Acesso de demonstração:** usuário `lucas`, senha `1234`.
+**Acesso de demonstração:** usuário `barbershop`, senha `barbershop`, quando a base demo tiver sido carregada em banco vazio.
 
 ---
 
@@ -45,8 +45,9 @@ web/
 │   ├── barbearia.js           Abas, cartões e modal de cadastro
 │   ├── historico.js           Filtros, ordenação e paginação
 │   └── relatorios.js          Agregações e gráficos
-└── img/                       SVGs próprios (logo, ilustração do login, serviços, avatares)
 ```
+
+Os SVGs de marca, login, serviços e avatares ficam em `../shared-assets/img` e são referenciados no HTML/JS por `/shared-assets/img/...`.
 
 ---
 

@@ -23,6 +23,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        File sharedAssetsDir = new File("../shared-assets");
+        if (!sharedAssetsDir.exists()) {
+            sharedAssetsDir = new File("shared-assets");
+        }
+        if (sharedAssetsDir.exists()) {
+            registry.addResourceHandler("/shared-assets/**")
+                    .addResourceLocations("file:" + sharedAssetsDir.getAbsolutePath() + "/");
+        }
+
         // Mapeia os arquivos estáticos do módulo web caso estejam no caminho do workspace
         File webDir = new File("../web");
         if (!webDir.exists()) {

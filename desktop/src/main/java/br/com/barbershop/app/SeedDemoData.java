@@ -36,7 +36,7 @@ public class SeedDemoData {
                 System.out.println("  Senha:     barbershop");
                 System.out.println("  Serviços:  6 cadastrados");
                 System.out.println("  Barbeiros: 4 cadastrados");
-                System.out.println("  Agenda:    18 agendamentos gerados (cobrindo RF11)");
+                System.out.println("  Agenda:    17 agendamentos gerados (cobrindo RF11)");
             } else {
                 System.out.println("ℹ Nenhuma alteração feita: já existe uma barbearia cadastrada no banco.");
             }

@@ -51,8 +51,9 @@ java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
 java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
 # or, with the API running: curl -X POST http://localhost:8080/api/dev/seed
 
-# 7. Run the Web Front-end
-npx serve web      # access http://localhost:3000 (demo login: barbershop / barbershop)
+# 7. Run the static Web Front-end from the repository root
+python -m http.server 5500
+# access http://localhost:5500/web/index.html (demo login: barbershop / barbershop)
 ```
 
 ---
@@ -80,6 +81,9 @@ barber-shop-suite/
 │   ├── screenshots/
 │   └── wireframes/
 │
+├── shared-assets/
+│   └── img/                            # Official source for brand, service, and avatar SVGs
+│
 ├── core/                               # [MODULE 1] Shared business rules core (Java)
 │   ├── pom.xml
 │   └── src/
@@ -101,8 +105,7 @@ barber-shop-suite/
 │   ├── index.html, agenda.html, agendamento.html, barbearia.html, historico.html, relatorios.html
 │   ├── verificacao-classificacao.html  # Visual runner for RF11 parity verification
 │   ├── css/                            # Modular styles
-│   ├── js/                             # UI logic and REST client (api.js)
-│   └── img/                            # Single source for SVG assets reused by the desktop build
+│   └── js/                             # UI logic and REST client (api.js)
 │
 └── api/                                # [MODULE 4] Spring Boot 3.2.5 REST API
     ├── pom.xml
@@ -153,10 +156,10 @@ The API is available at `http://localhost:8080/api/` and also serves the `web/` 
 ### 4. `web`
 
 ```bash
-npx serve web
+python -m http.server 5500
 ```
 
-Access <http://localhost:3000>. The static front-end still reads and writes real data through `http://localhost:8080/api`.
+Access <http://localhost:5500/web/index.html>. The static front-end still reads and writes real data through `http://localhost:8080/api`.
 
 Demo credentials after loading the demo database:
 
@@ -195,9 +198,9 @@ There is also a **Carregar dados de demonstração** button in the desktop initi
 
 ## 🖼️ Shared Images
 
-Logo, service, and avatar SVG files have a single versioned source: `web/img`. The desktop module does not keep manual copies. During `generate-resources`, `maven-resources-plugin` copies `../web/img` into the desktop classpath (`target/classes/img`), and Swing screens load those SVGs through `FlatSVGIcon`.
+Logo, service, and avatar SVG files have a single versioned source: `shared-assets/img`. The web front-end references those files through `/shared-assets/img/...`, the API exposes that path as a static resource in development, and the desktop module does not keep manual copies. During `generate-resources`, `maven-resources-plugin` copies `../shared-assets/img` into the desktop classpath (`target/classes/img`), and Swing screens load those SVGs through `FlatSVGIcon`.
 
-This keeps the visual identity aligned across web and desktop, avoids asset drift, and preserves a text fallback in Swing when an icon cannot be found in the build.
+This keeps the visual identity aligned across web, API, and desktop, avoids asset drift, and preserves a text fallback in Swing when an icon cannot be found in the build.
 
 ---
 

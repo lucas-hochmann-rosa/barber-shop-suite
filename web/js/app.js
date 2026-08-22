@@ -70,20 +70,20 @@ function imagemBase64ParaSrc(valor) {
 function imagemServico(servico) {
     if (servico && servico.imagemBase64) return imagemBase64ParaSrc(servico.imagemBase64);
     const mapa = {
-        'corte masculino': 'img/servico-corte.svg',
-        'barba tradicional': 'img/servico-barba.svg',
-        'corte + barba': 'img/servico-combo.svg',
-        'pezinho': 'img/servico-pezinho.svg',
-        'sobrancelha': 'img/servico-sobrancelha.svg',
-        'platinado': 'img/servico-platinado.svg'
+        'corte masculino': '/shared-assets/img/servico-corte.svg',
+        'barba tradicional': '/shared-assets/img/servico-barba.svg',
+        'corte + barba': '/shared-assets/img/servico-combo.svg',
+        'pezinho': '/shared-assets/img/servico-pezinho.svg',
+        'sobrancelha': '/shared-assets/img/servico-sobrancelha.svg',
+        'platinado': '/shared-assets/img/servico-platinado.svg'
     };
-    return mapa[String(servico && servico.nome || '').toLowerCase()] || 'img/servico-corte.svg';
+    return mapa[String(servico && servico.nome || '').toLowerCase()] || '/shared-assets/img/servico-corte.svg';
 }
 
 function imagemBarbeiro(barbeiro) {
     if (barbeiro && barbeiro.imagemBase64) return imagemBase64ParaSrc(barbeiro.imagemBase64);
     const indice = barbeiro && barbeiro.id ? ((Number(barbeiro.id) - 1) % 4) + 1 : 1;
-    return `img/avatar-${indice}.svg`;
+    return `/shared-assets/img/avatar-${indice}.svg`;
 }
 
 function mostrarErroNaTela(seletor, erro, fallback) {

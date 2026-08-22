@@ -90,15 +90,16 @@ public class TelaHome extends javax.swing.JFrame {
         pnlSideMenu.setBackground(UIUtil.COLOR_VERDE_CADEIRA);
         UIUtil.aplicarLogo(lblLogo, 64, 64);
         lblLogo.setBounds(0, 25, 200, 70);
-        btnHome.setBounds(10, 125, 180, 40);
-        btnMinhaBarbearia.setBounds(10, 175, 180, 40);
-        btnHistorico.setBounds(10, 225, 180, 40);
-        btnRelatorios.setBounds(10, 275, 180, 40);
+        btnHome.setBounds(10, 120, 180, 40);
+        btnMinhaBarbearia.setBounds(10, 170, 180, 40);
+        btnHistorico.setBounds(10, 220, 180, 40);
+        btnRelatorios.setBounds(10, 270, 180, 40);
+        btnSair.setBounds(10, 510, 180, 40);
 
-        UIUtil.aplicarEstiloCartao(pnlHome);
-        UIUtil.aplicarEstiloCartao(pnlMinhaBarbearia);
-        UIUtil.aplicarEstiloCartao(pnlHistorico);
-        UIUtil.aplicarEstiloCartao(pnlRelatorios);
+        pnlHome.setBackground(UIUtil.COLOR_PORCELANA);
+        pnlMinhaBarbearia.setBackground(UIUtil.COLOR_PORCELANA);
+        pnlHistorico.setBackground(UIUtil.COLOR_PORCELANA);
+        pnlRelatorios.setBackground(UIUtil.COLOR_PORCELANA);
         UIUtil.aplicarEstiloCartao(pnlDadosGerais);
         UIUtil.aplicarEstiloCartao(pnlGerenciarServicos);
         UIUtil.aplicarEstiloCartao(pnlGerenciarBarbeiros);
