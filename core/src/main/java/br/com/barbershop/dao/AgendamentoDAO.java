@@ -258,7 +258,8 @@ public class AgendamentoDAO implements AgendamentoRepository {
         List<Agendamento> lista = new ArrayList<>();
         String sql = "SELECT a.*, " +
                 "COALESCE(a.servico_nome_snapshot, s.nome) AS servico_nome, " +
-                "COALESCE(a.barbeiro_nome_snapshot, b.nome) AS barbeiro_nome " +
+                "COALESCE(a.barbeiro_nome_snapshot, b.nome) AS barbeiro_nome, " +
+                "s.preco AS servico_preco " +
                 "FROM agendamentos a " +
                 "LEFT JOIN servicos s ON a.servico_id = s.id " +
                 "LEFT JOIN barbeiros b ON a.barbeiro_id = b.id " +
@@ -310,6 +311,9 @@ public class AgendamentoDAO implements AgendamentoRepository {
         a.setDuracaoMinutos(rs.wasNull() || duracao <= 0 ? 30 : duracao);
 
         a.setMotivoCancelamento(rs.getString("motivo_cancelamento"));
+
+        java.math.BigDecimal preco = rs.getBigDecimal("servico_preco");
+        a.setPreco(preco != null ? preco : java.math.BigDecimal.ZERO);
 
         return a;
     }

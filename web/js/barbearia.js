@@ -1,12 +1,12 @@
 /* Abas (dados, serviços, barbeiros), cartões e modal (RF03, RF04) */
 
 const TelaBarbearia = {
-
-    /** 'servico' ou 'barbeiro'; e o item sendo editado (null = novo). */
     tipoEmEdicao: null,
     itemEmEdicao: null,
-
-    /* Abas */
+    barbearia: null,
+    servicos: [],
+    barbeiros: [],
+    agendamentos: [],
 
     trocarAba(nome) {
         const paineis = {
@@ -25,18 +25,36 @@ const TelaBarbearia = {
         });
     },
 
-    /* Aba Dados */
+    async carregarTudo() {
+        const barbeariaId = Sessao.barbeariaId();
+        const [barbearia, servicos, barbeiros, agendamentos] = await Promise.all([
+            Api.obterBarbearia(),
+            Api.listarServicos(barbeariaId),
+            Api.listarBarbeiros(barbeariaId),
+            Api.listarTodosAgendamentos(barbeariaId).catch(() => [])
+        ]);
 
-    carregarDados() {
-        const b = Dados.barbearia;
-        document.getElementById('barbeariaNome').value = b.nome;
-        document.getElementById('barbeariaCep').value = b.cep;
-        document.getElementById('barbeariaCultura').value = b.culturaValores;
-        document.getElementById('barbeariaAbertura').value = b.horarioAbertura;
-        document.getElementById('barbeariaFechamento').value = b.horarioFechamento;
+        this.barbearia = barbearia;
+        this.servicos = servicos;
+        this.barbeiros = barbeiros;
+        this.agendamentos = agendamentos.map(normalizarAgendamento);
+
+        Sessao.entrar(Sessao.usuario() || 'Usuário', {
+            barbeariaId: barbearia.id,
+            barbeariaNome: barbearia.nome
+        });
     },
 
-    salvarDados(evento) {
+    carregarDados() {
+        const b = this.barbearia;
+        document.getElementById('barbeariaNome').value = b.nome || '';
+        document.getElementById('barbeariaCep').value = b.cep || '';
+        document.getElementById('barbeariaCultura').value = b.culturaValores || '';
+        document.getElementById('barbeariaAbertura').value = b.horarioAbertura || '';
+        document.getElementById('barbeariaFechamento').value = b.horarioFechamento || '';
+    },
+
+    async salvarDados(evento) {
         evento.preventDefault();
         const self = TelaBarbearia;
         const formulario = document.getElementById('formBarbearia');
@@ -48,34 +66,39 @@ const TelaBarbearia = {
 
         let valido = Validacao.obrigatorio(nome, 'Informe o nome da barbearia.');
 
-        // Mesma regra do desktop: se os dois horários vierem, abertura < fechamento
         if (abertura.value && fechamento.value && abertura.value >= fechamento.value) {
             Validacao.marcarErro(abertura, 'A abertura deve ser antes do fechamento.');
             valido = false;
         }
         if (!valido) return;
 
-        Object.assign(Dados.barbearia, {
+        const payload = {
+            id: self.barbearia.id,
             nome: nome.value.trim(),
             cep: document.getElementById('barbeariaCep').value.trim(),
             culturaValores: document.getElementById('barbeariaCultura').value.trim(),
             horarioAbertura: abertura.value,
             horarioFechamento: fechamento.value
-        });
+        };
 
-        document.querySelectorAll('.barra-lateral__barbearia')
-            .forEach((e) => { e.textContent = Dados.barbearia.nome; });
-
-        self.avisar('Dados da barbearia atualizados.');
+        try {
+            await Api.atualizarBarbearia(payload);
+            self.barbearia = { ...self.barbearia, ...payload };
+            Sessao.entrar(Sessao.usuario() || 'Usuário', {
+                barbeariaId: self.barbearia.id,
+                barbeariaNome: self.barbearia.nome
+            });
+            self.avisar('Dados da barbearia atualizados.');
+        } catch (erro) {
+            self.avisar(erro.message || 'Não foi possível atualizar os dados da barbearia.', 'erro');
+        }
     },
-
-    /* Cartões */
 
     desenharServicos() {
         const grade = document.getElementById('gradeServicos');
-        grade.innerHTML = Dados.servicos.map((s) => `
+        grade.innerHTML = this.servicos.map((s) => `
             <li class="cartao-item">
-                <img class="cartao-item__foto" src="${s.imagem}" alt="" width="320" height="180">
+                <img class="cartao-item__foto" src="${imagemServico(s)}" alt="" width="320" height="180">
                 <div class="cartao-item__corpo">
                     <h3 class="cartao-item__nome">${s.nome}</h3>
                     <p class="cartao-item__detalhe">
@@ -92,10 +115,10 @@ const TelaBarbearia = {
 
     desenharBarbeiros() {
         const grade = document.getElementById('gradeBarbeiros');
-        grade.innerHTML = Dados.barbeiros.map((b) => `
+        grade.innerHTML = this.barbeiros.map((b) => `
             <li class="cartao-item">
                 <div class="cartao-item__avatar">
-                    <img src="${b.imagem}" alt="" width="96" height="96">
+                    <img src="${imagemBarbeiro(b)}" alt="" width="96" height="96">
                 </div>
                 <div class="cartao-item__corpo">
                     <h3 class="cartao-item__nome">${b.nome}</h3>
@@ -111,12 +134,10 @@ const TelaBarbearia = {
     },
 
     contarAtendimentos(barbeiroId) {
-        return Dados.agendamentos.filter(
+        return this.agendamentos.filter(
             (a) => a.barbeiroId === barbeiroId && a.status === StatusAgendamento.CONCLUIDO
         ).length;
     },
-
-    /* Modal */
 
     abrirModal(tipo, item) {
         this.tipoEmEdicao = tipo;
@@ -126,7 +147,6 @@ const TelaBarbearia = {
         const titulo = (item ? 'Editar ' : 'Novo ') + (ehServico ? 'serviço' : 'barbeiro');
         document.getElementById('modalTitulo').textContent = titulo;
 
-        // Preço e duração só existem para serviço
         document.getElementById('camposServico').hidden = !ehServico;
 
         document.getElementById('itemNome').value = item ? item.nome : '';
@@ -137,7 +157,7 @@ const TelaBarbearia = {
         Modal.abrir('#modalCadastro');
     },
 
-    salvarModal(evento) {
+    async salvarModal(evento) {
         evento.preventDefault();
         const self = TelaBarbearia;
         const formulario = document.getElementById('formModal');
@@ -147,16 +167,6 @@ const TelaBarbearia = {
         const ehServico = self.tipoEmEdicao === 'servico';
 
         let valido = Validacao.obrigatorio(nome, 'Informe o nome.');
-
-        // Nome duplicado, mesma regra do CatalogoService do desktop
-        const lista = ehServico ? Dados.servicos : Dados.barbeiros;
-        const repetido = lista.some((i) =>
-            i.nome.toLowerCase() === nome.value.trim().toLowerCase()
-            && (!self.itemEmEdicao || i.id !== self.itemEmEdicao.id));
-        if (valido && repetido) {
-            Validacao.marcarErro(nome, `Já existe um ${ehServico ? 'serviço' : 'barbeiro'} com esse nome.`);
-            valido = false;
-        }
 
         let preco = 0;
         let duracao = 30;
@@ -179,61 +189,78 @@ const TelaBarbearia = {
 
         if (!valido) return;
 
-        if (self.itemEmEdicao) {
-            self.itemEmEdicao.nome = nome.value.trim();
+        try {
             if (ehServico) {
-                self.itemEmEdicao.preco = preco;
-                self.itemEmEdicao.duracaoMinutos = duracao;
-            }
-            self.avisar(`${ehServico ? 'Serviço' : 'Barbeiro'} atualizado.`);
-        } else {
-            const novoId = lista.reduce((maior, i) => Math.max(maior, i.id), 0) + 1;
-            if (ehServico) {
-                Dados.servicos.push({
-                    id: novoId, nome: nome.value.trim(), preco: preco,
-                    duracaoMinutos: duracao, imagem: 'img/servico-corte.svg'
-                });
-            } else {
-                // Reaproveita um dos avatares existentes
-                const avatar = 'img/avatar-' + ((novoId % 4) + 1) + '.svg';
-                Dados.barbeiros.push({ id: novoId, nome: nome.value.trim(), imagem: avatar });
-            }
-            self.avisar(`${ehServico ? 'Serviço' : 'Barbeiro'} cadastrado.`);
-        }
+                const payload = {
+                    barbeariaId: self.barbearia.id,
+                    nome: nome.value.trim(),
+                    preco,
+                    duracaoMinutos: duracao,
+                    imagemBase64: self.itemEmEdicao ? self.itemEmEdicao.imagemBase64 : null
+                };
 
-        Modal.fechar();
-        self.desenharServicos();
-        self.desenharBarbeiros();
+                if (self.itemEmEdicao) {
+                    await Api.atualizarServico(self.itemEmEdicao.id, payload);
+                    self.avisar('Serviço atualizado.');
+                } else {
+                    await Api.criarServico(payload);
+                    self.avisar('Serviço cadastrado.');
+                }
+            } else {
+                const payload = {
+                    barbeariaId: self.barbearia.id,
+                    nome: nome.value.trim(),
+                    imagemBase64: self.itemEmEdicao ? self.itemEmEdicao.imagemBase64 : null
+                };
+
+                if (self.itemEmEdicao) {
+                    await Api.atualizarBarbeiro(self.itemEmEdicao.id, payload);
+                    self.avisar('Barbeiro atualizado.');
+                } else {
+                    await Api.criarBarbeiro(payload);
+                    self.avisar('Barbeiro cadastrado.');
+                }
+            }
+
+            Modal.fechar();
+            await self.carregarTudo();
+            self.carregarDados();
+            self.desenharServicos();
+            self.desenharBarbeiros();
+        } catch (erro) {
+            self.avisar(erro.message || 'Não foi possível salvar o cadastro.', 'erro');
+        }
     },
 
-    /* Exclusão */
-
-    excluir(tipo, id) {
+    async excluir(tipo, id) {
         const ehServico = tipo === 'servico';
-        const lista = ehServico ? Dados.servicos : Dados.barbeiros;
-        const posicao = lista.findIndex((i) => i.id === Number(id));
-        if (posicao < 0) return;
+        const lista = ehServico ? this.servicos : this.barbeiros;
+        const item = lista.find((i) => i.id === Number(id));
+        if (!item) return;
 
-        const item = lista[posicao];
-
-        // Avisa se há agendamentos usando este item (o histórico guarda o
-        // nome como snapshot, então não se perde - mesmo desenho do desktop)
-        const emUso = Dados.agendamentos.filter(
+        const emUso = this.agendamentos.filter(
             (a) => (ehServico ? a.servicoId : a.barbeiroId) === item.id
         ).length;
 
-        lista.splice(posicao, 1);
-        this.desenharServicos();
-        this.desenharBarbeiros();
+        try {
+            if (ehServico) {
+                await Api.excluirServico(item.id);
+            } else {
+                await Api.excluirBarbeiro(item.id);
+            }
 
-        this.avisar(
-            `${item.nome} foi excluído.`
-            + (emUso ? ` ${emUso} agendamento(s) mantêm o nome registrado no histórico.` : ''),
-            emUso ? 'alerta' : 'sucesso'
-        );
+            await this.carregarTudo();
+            this.desenharServicos();
+            this.desenharBarbeiros();
+            this.avisar(
+                `${item.nome} foi excluído.`
+                + (emUso ? ` ${emUso} agendamento(s) mantêm o nome registrado no histórico.` : ''),
+                emUso ? 'alerta' : 'sucesso'
+            );
+        } catch (erro) {
+            this.avisar(erro.message || `Não foi possível excluir ${item.nome}.`, 'erro');
+        }
     },
-
-    /* Mensagens */
 
     avisar(mensagem, tipo) {
         const painel = document.getElementById('avisoBarbearia');
@@ -242,18 +269,23 @@ const TelaBarbearia = {
         painel.textContent = mensagem;
 
         clearTimeout(this._temporizador);
-        this._temporizador = setTimeout(() => { painel.hidden = true; }, 5000);
+        if (tipo !== 'erro') {
+            this._temporizador = setTimeout(() => { painel.hidden = true; }, 5000);
+        }
     },
 
-    /* Partida */
-
-    iniciar() {
+    async iniciar() {
         if (!document.getElementById('painelServicos')) return;
 
-        this.carregarDados();
-        this.desenharServicos();
-        this.desenharBarbeiros();
-        this.trocarAba('servicos');
+        try {
+            await this.carregarTudo();
+            this.carregarDados();
+            this.desenharServicos();
+            this.desenharBarbeiros();
+            this.trocarAba('servicos');
+        } catch (erro) {
+            this.avisar(erro.message || 'Não foi possível carregar os dados da barbearia.', 'erro');
+        }
 
         document.querySelectorAll('.aba').forEach((aba) => {
             aba.addEventListener('click', () => this.trocarAba(aba.dataset.aba));
@@ -270,8 +302,8 @@ const TelaBarbearia = {
             if (editar) {
                 const tipo = editar.dataset.editar;
                 const item = tipo === 'servico'
-                    ? Dados.servicoPorId(editar.dataset.id)
-                    : Dados.barbeiroPorId(editar.dataset.id);
+                    ? this.servicos.find((s) => s.id === Number(editar.dataset.id))
+                    : this.barbeiros.find((b) => b.id === Number(editar.dataset.id));
                 return this.abrirModal(tipo, item);
             }
 

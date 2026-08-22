@@ -173,8 +173,14 @@ const Api = (() => {
             return requisicao(`/agenda/${id}/cancelar${query}`, { method: 'POST' });
         },
 
-        async verificarConflito(barbeiroId, dataHora, duracaoMinutos) {
-            const query = `?barbeiroId=${barbeiroId}&dataHora=${encodeURIComponent(dataHora)}&duracaoMinutos=${duracaoMinutos}`;
+        async verificarConflito(barbeiroId, dataHora, duracaoMinutos, barbeariaId) {
+            const params = new URLSearchParams({
+                barbeiroId,
+                dataHora,
+                duracaoMinutos
+            });
+            if (barbeariaId) params.append('barbeariaId', barbeariaId);
+            const query = `?${params.toString()}`;
             return requisicao(`/agenda/conflito${query}`);
         },
 

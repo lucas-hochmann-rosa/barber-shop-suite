@@ -1,11 +1,19 @@
 /* Formulário de novo agendamento / edição (RF05, RF06, RF10) */
 
 const TelaAgendamento = {
-
-    /** Preenchido quando a página abre com ?id=, indicando edição. */
     emEdicao: null,
+    servicos: [],
+    barbeiros: [],
 
-    /* Preparação dos campos */
+    async carregarDadosBase() {
+        const barbeariaId = Sessao.barbeariaId();
+        const [servicos, barbeiros] = await Promise.all([
+            Api.listarServicos(barbeariaId),
+            Api.listarBarbeiros(barbeariaId)
+        ]);
+        this.servicos = servicos;
+        this.barbeiros = barbeiros;
+    },
 
     preencherSelecoes() {
         const servico = document.getElementById('servico');
@@ -13,41 +21,36 @@ const TelaAgendamento = {
         const origem = document.getElementById('origemContato');
 
         servico.innerHTML = '<option value="">Selecione…</option>'
-            + Dados.servicos.map((s) =>
+            + this.servicos.map((s) =>
                 `<option value="${s.id}">${s.nome} - ${Formato.moeda(s.preco)} (${s.duracaoMinutos} min)</option>`
             ).join('');
 
         barbeiro.innerHTML = '<option value="">Selecione…</option>'
-            + Dados.barbeiros.map((b) => `<option value="${b.id}">${b.nome}</option>`).join('');
+            + this.barbeiros.map((b) => `<option value="${b.id}">${b.nome}</option>`).join('');
 
         const rotulos = {
             INSTAGRAM: 'Instagram', WHATSAPP: 'WhatsApp', PRESENCIAL: 'Presencial',
             TELEFONE: 'Telefone', OUTRO: 'Outro'
         };
-        origem.innerHTML = Dados.origensContato
-            .map((o) => `<option value="${o}">${rotulos[o]}</option>`).join('');
+        origem.innerHTML = OrigemContato.map((o) => `<option value="${o}">${rotulos[o]}</option>`).join('');
     },
 
-    /** Lê ?servico= (vindo do card da agenda) ou ?id= (edição). */
-    lerEndereco() {
+    async lerEndereco() {
         const parametros = new URLSearchParams(window.location.search);
 
         const idEdicao = parametros.get('id');
         if (idEdicao) {
-            const agendamento = Dados.agendamentos.find((a) => a.id === Number(idEdicao));
-            if (agendamento) {
-                this.emEdicao = agendamento;
-                this.carregarParaEdicao(agendamento);
-                return;
-            }
+            const agendamento = normalizarAgendamento(await Api.buscarAgendamentoPorId(idEdicao));
+            this.emEdicao = agendamento;
+            this.carregarParaEdicao(agendamento);
+            return;
         }
 
         const servicoEscolhido = parametros.get('servico');
-        if (servicoEscolhido && Dados.servicoPorId(servicoEscolhido)) {
+        if (servicoEscolhido && this.servicoPorId(servicoEscolhido)) {
             document.getElementById('servico').value = servicoEscolhido;
         }
 
-        // Sugestão de data/hora: hoje, na próxima meia hora cheia
         const sugestao = new Date();
         sugestao.setMinutes(sugestao.getMinutes() + 30, 0, 0);
         sugestao.setMinutes(sugestao.getMinutes() < 30 ? 0 : 30);
@@ -68,7 +71,6 @@ const TelaAgendamento = {
         document.getElementById('barbeiro').value = a.barbeiroId;
         document.getElementById('observacoes').value = a.observacoes || '';
 
-        // Excluir só faz sentido em cima de um agendamento existente (RF06)
         const excluir = document.getElementById('botaoExcluir');
         excluir.hidden = false;
         excluir.addEventListener('click', () => this.excluir());
@@ -85,7 +87,10 @@ const TelaAgendamento = {
             + String(data.getMinutes()).padStart(2, '0');
     },
 
-    /** Junta os campos data + hora num Date, ou null se algum faltar. */
+    paraApiLocalDateTime(data) {
+        return this.paraCampoData(data) + 'T' + this.paraCampoHora(data) + ':00';
+    },
+
     dataHoraEscolhida() {
         const data = document.getElementById('data').value;
         const hora = document.getElementById('hora').value;
@@ -93,15 +98,21 @@ const TelaAgendamento = {
         return new Date(data + 'T' + hora);
     },
 
+    servicoPorId(id) {
+        return this.servicos.find((s) => s.id === Number(id));
+    },
+
+    barbeiroPorId(id) {
+        return this.barbeiros.find((b) => b.id === Number(id));
+    },
+
     servicoEscolhido() {
-        return Dados.servicoPorId(document.getElementById('servico').value);
+        return this.servicoPorId(document.getElementById('servico').value);
     },
 
     barbeiroEscolhido() {
-        return Dados.barbeiroPorId(document.getElementById('barbeiro').value);
+        return this.barbeiroPorId(document.getElementById('barbeiro').value);
     },
-
-    /* Painel de resumo */
 
     atualizarResumo() {
         const servico = this.servicoEscolhido();
@@ -117,9 +128,7 @@ const TelaAgendamento = {
         document.getElementById('resumoTotal').textContent = Formato.moeda(servico ? servico.preco : 0);
     },
 
-    /* Verificação de conflito (RF10) */
-
-    verificarConflito() {
+    async verificarConflito() {
         const painel = document.getElementById('painelConflito');
         const servico = this.servicoEscolhido();
         const barbeiro = this.barbeiroEscolhido();
@@ -135,33 +144,30 @@ const TelaAgendamento = {
             return true;
         }
 
-        if (!Dados.dentroDoHorario(quando, servico.duracaoMinutos)) {
-            mostrar(
-                `Fora do expediente: a barbearia atende das ${Dados.barbearia.horarioAbertura} `
-                + `às ${Dados.barbearia.horarioFechamento}, e este serviço leva ${servico.duracaoMinutos} min.`,
-                'alerta'
+        try {
+            const resposta = await Api.verificarConflito(
+                barbeiro.id,
+                this.paraApiLocalDateTime(quando),
+                servico.duracaoMinutos,
+                Sessao.barbeariaId()
             );
+
+            if (!resposta.dentroExpediente) {
+                mostrar(resposta.mensagem, 'alerta');
+                return false;
+            }
+            if (resposta.conflito) {
+                mostrar(resposta.mensagem, 'erro');
+                return false;
+            }
+
+            mostrar(`${barbeiro.nome} está livre neste horário.`, 'sucesso');
+            return true;
+        } catch (erro) {
+            mostrar(erro.message || 'Não foi possível verificar a disponibilidade.', 'erro');
             return false;
         }
-
-        const ignorar = this.emEdicao ? this.emEdicao.id : null;
-        const conflito = Dados.temConflito(barbeiro.id, quando, servico.duracaoMinutos, ignorar);
-
-        if (conflito) {
-            const fim = new Date(conflito.dataHora.getTime() + conflito.duracaoMinutos * 60000);
-            mostrar(
-                `Horário ocupado para este barbeiro: ${conflito.clienteNome} das `
-                + `${Formato.hora(conflito.dataHora)} às ${Formato.hora(fim)} (${conflito.servicoNome}).`,
-                'erro'
-            );
-            return false;
-        }
-
-        mostrar(`${barbeiro.nome} está livre neste horário.`, 'sucesso');
-        return true;
     },
-
-    /* Salvar */
 
     validar() {
         const formulario = document.getElementById('formAgendamento');
@@ -196,7 +202,21 @@ const TelaAgendamento = {
         return valido;
     },
 
-    salvar(evento) {
+    montarPayload() {
+        const quando = this.dataHoraEscolhida();
+        return {
+            barbeariaId: Sessao.barbeariaId(),
+            clienteNome: document.getElementById('clienteNome').value.trim(),
+            contato: document.getElementById('contato').value.trim(),
+            origemContato: document.getElementById('origemContato').value,
+            dataHora: this.paraApiLocalDateTime(quando),
+            servicoId: Number(document.getElementById('servico').value),
+            barbeiroId: Number(document.getElementById('barbeiro').value),
+            status: this.emEdicao ? this.emEdicao.status : StatusAgendamento.AGENDADO
+        };
+    },
+
+    async salvar(evento) {
         evento.preventDefault();
         const self = TelaAgendamento;
 
@@ -209,98 +229,67 @@ const TelaAgendamento = {
             return;
         }
 
-        if (!self.verificarConflito()) {
+        if (!await self.verificarConflito()) {
             Validacao.avisar('#avisoForm',
                 'Não dá para salvar: veja a verificação de conflito ao lado.', 'erro');
             return;
         }
 
-        const servico = self.servicoEscolhido();
-        const barbeiro = self.barbeiroEscolhido();
-        const quando = self.dataHoraEscolhida();
+        try {
+            const payload = self.montarPayload();
+            if (self.emEdicao) {
+                await Api.atualizarAgendamento(self.emEdicao.id, payload);
+                Validacao.avisar('#avisoForm', 'Agendamento atualizado com sucesso.', 'sucesso');
+                return;
+            }
 
-        if (self.emEdicao) {
-            Object.assign(self.emEdicao, {
-                clienteNome: document.getElementById('clienteNome').value.trim(),
-                contato: document.getElementById('contato').value.trim(),
-                origemContato: document.getElementById('origemContato').value,
-                dataHora: quando,
-                servicoId: servico.id,
-                servicoNome: servico.nome,
-                duracaoMinutos: servico.duracaoMinutos,
-                valor: servico.preco,
-                barbeiroId: barbeiro.id,
-                barbeiroNome: barbeiro.nome,
-                observacoes: document.getElementById('observacoes').value.trim()
-            });
-            Validacao.avisar('#avisoForm',
-                'Agendamento atualizado com sucesso.',
-                'sucesso');
-            return;
+            await Api.criarAgendamento(payload);
+            Validacao.avisar('#avisoForm', 'Agendamento salvo com sucesso.', 'sucesso');
+
+            document.getElementById('formAgendamento').reset();
+            self.atualizarResumo();
+            await self.verificarConflito();
+            document.getElementById('clienteNome').focus();
+        } catch (erro) {
+            Validacao.avisar('#avisoForm', erro.message || 'Não foi possível salvar o agendamento.', 'erro');
         }
-
-        Dados.agendamentos.push({
-            id: Dados.proximoId(),
-            barbeariaId: Dados.barbearia.id,
-            servicoId: servico.id,
-            barbeiroId: barbeiro.id,
-            servicoNome: servico.nome,
-            barbeiroNome: barbeiro.nome,
-            duracaoMinutos: servico.duracaoMinutos,
-            valor: servico.preco,
-            clienteNome: document.getElementById('clienteNome').value.trim(),
-            contato: document.getElementById('contato').value.trim(),
-            dataHora: quando,
-            origemContato: document.getElementById('origemContato').value,
-            status: StatusAgendamento.AGENDADO,
-            motivoCancelamento: null,
-            observacoes: document.getElementById('observacoes').value.trim()
-        });
-
-        Validacao.avisar('#avisoForm',
-            'Agendamento salvo com sucesso.',
-            'sucesso');
-
-        document.getElementById('formAgendamento').reset();
-        self.atualizarResumo();
-        self.verificarConflito();
-        document.getElementById('clienteNome').focus();
     },
 
-    excluir() {
+    async excluir() {
         if (!this.emEdicao) return;
 
-        const posicao = Dados.agendamentos.indexOf(this.emEdicao);
-        if (posicao >= 0) Dados.agendamentos.splice(posicao, 1);
-
-        this.emEdicao = null;
-        document.getElementById('formAgendamento').reset();
-        document.getElementById('botaoExcluir').hidden = true;
-        this.atualizarResumo();
-
-        Validacao.avisar('#avisoForm',
-            'Agendamento excluído com sucesso.',
-            'sucesso');
+        try {
+            await Api.excluirAgendamento(this.emEdicao.id);
+            this.emEdicao = null;
+            document.getElementById('formAgendamento').reset();
+            document.getElementById('botaoExcluir').hidden = true;
+            this.atualizarResumo();
+            Validacao.avisar('#avisoForm', 'Agendamento excluído com sucesso.', 'sucesso');
+        } catch (erro) {
+            Validacao.avisar('#avisoForm', erro.message || 'Não foi possível excluir o agendamento.', 'erro');
+        }
     },
 
-    /* Partida */
-
-    iniciar() {
+    async iniciar() {
         const formulario = document.getElementById('formAgendamento');
         if (!formulario) return;
 
-        this.preencherSelecoes();
-        this.lerEndereco();
-        this.atualizarResumo();
-        this.verificarConflito();
+        try {
+            await this.carregarDadosBase();
+            this.preencherSelecoes();
+            await this.lerEndereco();
+            this.atualizarResumo();
+            await this.verificarConflito();
+        } catch (erro) {
+            Validacao.avisar('#avisoForm', erro.message || 'Não foi possível carregar os dados do agendamento.', 'erro');
+        }
 
         Validacao.limparAoDigitar(formulario);
 
-        // Resumo e conflito acompanham a escolha, sem esperar o Salvar
         ['servico', 'barbeiro', 'data', 'hora'].forEach((id) => {
-            document.getElementById(id).addEventListener('change', () => {
+            document.getElementById(id).addEventListener('change', async () => {
                 this.atualizarResumo();
-                this.verificarConflito();
+                await this.verificarConflito();
             });
         });
 
