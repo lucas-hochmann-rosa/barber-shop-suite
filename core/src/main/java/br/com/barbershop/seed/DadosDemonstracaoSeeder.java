@@ -109,9 +109,9 @@ public class DadosDemonstracaoSeeder {
                 agora.minusMinutes(20), OrigemContato.PRESENCIAL);
 
         // (C) IMINENTES (2 agendamentos em até 30-45 min)
-        criarAgendamento(bId, sCorte, bLucas, "Rodrigo Lima", "(49) 99999-9904",
+        criarAgendamento(bId, sCorte, bBruno, "Rodrigo Lima", "(49) 99999-9904",
                 agora.plusMinutes(15), OrigemContato.WHATSAPP);
-        criarAgendamento(bId, sPezinho, bBruno, "Gustavo Pereira", "(49) 99999-9905",
+        criarAgendamento(bId, sPezinho, bGabriel, "Gustavo Pereira", "(49) 99999-9905",
                 agora.plusMinutes(25), OrigemContato.TELEFONE);
 
         // (D) PROXIMOS (2 agendamentos em até 60-90 min)
@@ -155,7 +155,7 @@ public class DadosDemonstracaoSeeder {
         agendaService.cancelarAgendamento(idCanc1, "Imprevisto no trabalho");
 
         int idCanc2 = criarAgendamento(bId, sBarba, bMatheus, "Julio Cesar", "(49) 99999-9917",
-                agora.plusMinutes(45), OrigemContato.TELEFONE);
+                agora.plusMinutes(120), OrigemContato.TELEFONE);
         agendaService.cancelarAgendamento(idCanc2, "Desistência do cliente");
 
         return true;
