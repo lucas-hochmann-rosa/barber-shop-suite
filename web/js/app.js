@@ -61,8 +61,14 @@ function normalizarAgendamento(a) {
     };
 }
 
+function imagemBase64ParaSrc(valor) {
+    if (!valor) return null;
+    if (String(valor).startsWith('data:')) return valor;
+    return `data:image/png;base64,${valor}`;
+}
+
 function imagemServico(servico) {
-    if (servico && servico.imagemBase64) return servico.imagemBase64;
+    if (servico && servico.imagemBase64) return imagemBase64ParaSrc(servico.imagemBase64);
     const mapa = {
         'corte masculino': 'img/servico-corte.svg',
         'barba tradicional': 'img/servico-barba.svg',
@@ -75,7 +81,7 @@ function imagemServico(servico) {
 }
 
 function imagemBarbeiro(barbeiro) {
-    if (barbeiro && barbeiro.imagemBase64) return barbeiro.imagemBase64;
+    if (barbeiro && barbeiro.imagemBase64) return imagemBase64ParaSrc(barbeiro.imagemBase64);
     const indice = barbeiro && barbeiro.id ? ((Number(barbeiro.id) - 1) % 4) + 1 : 1;
     return `img/avatar-${indice}.svg`;
 }

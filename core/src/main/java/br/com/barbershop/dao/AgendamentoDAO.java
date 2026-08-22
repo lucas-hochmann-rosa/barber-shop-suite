@@ -127,7 +127,8 @@ public class AgendamentoDAO implements AgendamentoRepository {
     public Agendamento buscarPorId(int id) throws SQLException {
         String sql = "SELECT a.*, " +
                 "COALESCE(a.servico_nome_snapshot, s.nome) AS servico_nome, " +
-                "COALESCE(a.barbeiro_nome_snapshot, b.nome) AS barbeiro_nome " +
+                "COALESCE(a.barbeiro_nome_snapshot, b.nome) AS barbeiro_nome, " +
+                "s.preco AS servico_preco " +
                 "FROM agendamentos a " +
                 "LEFT JOIN servicos s ON a.servico_id = s.id " +
                 "LEFT JOIN barbeiros b ON a.barbeiro_id = b.id " +
