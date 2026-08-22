@@ -88,6 +88,21 @@ public class TelaHome extends javax.swing.JFrame {
 
     private void aplicarEstilos() {
         pnlSideMenu.setBackground(UIUtil.COLOR_VERDE_CADEIRA);
+        UIUtil.aplicarLogo(lblLogo, 64, 64);
+        lblLogo.setBounds(0, 25, 200, 70);
+        btnHome.setBounds(10, 125, 180, 40);
+        btnMinhaBarbearia.setBounds(10, 175, 180, 40);
+        btnHistorico.setBounds(10, 225, 180, 40);
+        btnRelatorios.setBounds(10, 275, 180, 40);
+
+        UIUtil.aplicarEstiloCartao(pnlHome);
+        UIUtil.aplicarEstiloCartao(pnlMinhaBarbearia);
+        UIUtil.aplicarEstiloCartao(pnlHistorico);
+        UIUtil.aplicarEstiloCartao(pnlRelatorios);
+        UIUtil.aplicarEstiloCartao(pnlDadosGerais);
+        UIUtil.aplicarEstiloCartao(pnlGerenciarServicos);
+        UIUtil.aplicarEstiloCartao(pnlGerenciarBarbeiros);
+        UIUtil.aplicarEstiloCartao(pnlClientes);
 
         JButton[] botoesMenu = {btnHome, btnMinhaBarbearia, btnHistorico, btnRelatorios};
         for (JButton btn : botoesMenu) {

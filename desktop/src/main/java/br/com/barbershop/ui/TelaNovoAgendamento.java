@@ -90,7 +90,7 @@ public class TelaNovoAgendamento extends javax.swing.JFrame {
     private void atualizarFotoBarbeiro() {
         Barbeiro b = (Barbeiro) cbBarbeiro.getSelectedItem();
         if (b != null) {
-            UIUtil.exibirMiniatura(lblFotoBarbeiro, b.getFotoCaminho());
+            UIUtil.exibirMiniatura(lblFotoBarbeiro, b.getFotoCaminho(), 0, 0, "img/avatar-1.svg");
         }
     }
 

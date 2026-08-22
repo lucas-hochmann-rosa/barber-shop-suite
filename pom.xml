@@ -34,6 +34,7 @@
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
         <maven-jar-plugin.version>3.4.1</maven-jar-plugin.version>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-shade-plugin.version>3.5.1</maven-shade-plugin.version>
         <spring-boot-maven-plugin.version>3.2.5</spring-boot-maven-plugin.version>
     </properties>
@@ -74,6 +75,11 @@
                 <version>${flatlaf.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.formdev</groupId>
+                <artifactId>flatlaf-extras</artifactId>
+                <version>${flatlaf.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.netbeans.external</groupId>
                 <artifactId>AbsoluteLayout</artifactId>
                 <version>${absolutelayout.version}</version>
@@ -106,6 +112,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven-jar-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven-resources-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

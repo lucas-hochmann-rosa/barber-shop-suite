@@ -73,7 +73,7 @@ public class DialogServico extends javax.swing.JDialog {
             txtPreco.setText(servico.getPreco() != null ? servico.getPreco().toString() : "");
             spnDuracao.setValue(servico.getDuracaoMinutos() > 0 ? servico.getDuracaoMinutos() : 30);
             this.imagemBase64 = servico.getImagemBase64() != null ? servico.getImagemBase64() : "";
-            UIUtil.exibirMiniatura(lblPreview, imagemBase64);
+            UIUtil.exibirMiniatura(lblPreview, imagemBase64, 0, 0, "img/servico-corte.svg");
         }
     }
 
@@ -219,7 +219,7 @@ public class DialogServico extends javax.swing.JDialog {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             try {
                 this.imagemBase64 = ImageStorageUtil.paraBase64(chooser.getSelectedFile());
-                UIUtil.exibirMiniatura(lblPreview, imagemBase64);
+                UIUtil.exibirMiniatura(lblPreview, imagemBase64, 0, 0, "img/servico-corte.svg");
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, "Erro ao salvar a imagem: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }

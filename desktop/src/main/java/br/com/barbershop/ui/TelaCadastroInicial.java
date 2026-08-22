@@ -38,6 +38,13 @@ public class TelaCadastroInicial extends javax.swing.JFrame {
     }
 
     private void aplicarEstilos() {
+        UIUtil.aplicarLogo(lblTitulo, 40, 40);
+        lblTitulo.setText("Configuração Inicial");
+        UIUtil.aplicarEstiloCartao(pnlDados);
+        UIUtil.aplicarEstiloCartao(pnlServicos);
+        UIUtil.aplicarEstiloCartao(pnlBarbeiros);
+        UIUtil.aplicarEstiloCartao(pnlUsuario);
+
         UIUtil.estilizarBotaoPrimario(btnSalvar);
         UIUtil.estilizarBotaoSecundario(btnCancelar);
         if (btnCarregarDemo != null) {

@@ -198,7 +198,7 @@ public class TelaEditarAgendamento extends JFrame {
     private void atualizarFotoBarbeiro() {
         Barbeiro b = (Barbeiro) cbBarbeiro.getSelectedItem();
         if (b != null) {
-            UIUtil.exibirMiniatura(lblFotoBarbeiro, b.getFotoCaminho(), 100, 100);
+            UIUtil.exibirMiniatura(lblFotoBarbeiro, b.getFotoCaminho(), 100, 100, "img/avatar-1.svg");
         }
     }
 

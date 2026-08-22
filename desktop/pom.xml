@@ -37,6 +37,10 @@
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf-extras</artifactId>
+        </dependency>
 
         <!-- Implementação de logging (a fachada slf4j-api já vem transitivamente do core) -->
         <dependency>
@@ -53,6 +57,29 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copiar-imagens-web</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/img</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../web/img</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

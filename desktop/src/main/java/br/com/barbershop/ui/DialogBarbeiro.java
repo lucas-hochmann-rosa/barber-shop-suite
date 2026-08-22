@@ -67,7 +67,7 @@ public class DialogBarbeiro extends javax.swing.JDialog {
         if (barbeiro != null) {
             txtNome.setText(barbeiro.getNome());
             this.imagemBase64 = barbeiro.getImagemBase64() != null ? barbeiro.getImagemBase64() : "";
-            UIUtil.exibirMiniatura(lblPreview, imagemBase64);
+            UIUtil.exibirMiniatura(lblPreview, imagemBase64, 0, 0, "img/avatar-1.svg");
         }
     }
 
@@ -192,7 +192,7 @@ public class DialogBarbeiro extends javax.swing.JDialog {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             try {
                 this.imagemBase64 = ImageStorageUtil.paraBase64(chooser.getSelectedFile());
-                UIUtil.exibirMiniatura(lblPreview, imagemBase64);
+                UIUtil.exibirMiniatura(lblPreview, imagemBase64, 0, 0, "img/avatar-1.svg");
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, "Erro ao salvar a imagem: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
