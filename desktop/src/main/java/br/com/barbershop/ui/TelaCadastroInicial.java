@@ -40,6 +40,9 @@ public class TelaCadastroInicial extends javax.swing.JFrame {
     private void aplicarEstilos() {
         UIUtil.estilizarBotaoPrimario(btnSalvar);
         UIUtil.estilizarBotaoSecundario(btnCancelar);
+        if (btnCarregarDemo != null) {
+            UIUtil.estilizarBotaoSecundario(btnCarregarDemo);
+        }
         UIUtil.estilizarBotaoPrimario(btnAdicionarServico);
         UIUtil.estilizarBotaoSecundario(btnEditarServico);
         UIUtil.estilizarBotaoPerigo(btnRemoverServico);
@@ -360,6 +363,14 @@ public class TelaCadastroInicial extends javax.swing.JFrame {
             }
         });
 
+        btnCarregarDemo = new javax.swing.JButton();
+        btnCarregarDemo.setText("Carregar Dados de Demonstração");
+        btnCarregarDemo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCarregarDemoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -372,7 +383,8 @@ public class TelaCadastroInicial extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(pnlDados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnCarregarDemo, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -399,7 +411,8 @@ public class TelaCadastroInicial extends javax.swing.JFrame {
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCarregarDemo, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
@@ -517,10 +530,47 @@ public class TelaCadastroInicial extends javax.swing.JFrame {
         this.dispose();
     }
 
+    private void btnCarregarDemoActionPerformed(java.awt.event.ActionEvent evt) {
+        int confirm = JOptionPane.showConfirmDialog(
+            this,
+            "Deseja carregar a base de demonstração (barbearia, catálogo, barbeiros e agendamentos)?",
+            "Carregar Dados de Demonstração",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
+        );
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        try {
+            FabricaDeServicos fabrica = new FabricaDeServicos();
+            boolean semeou = fabrica.criarDadosDemonstracaoSeeder().semearSeNecessario();
+            if (semeou) {
+                JOptionPane.showMessageDialog(this,
+                    "Dados de demonstração carregados com sucesso!\nLogin: barbershop\nSenha: barbershop",
+                    "Sucesso",
+                    JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+                new TelaLogin().setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "Já existe uma barbearia cadastrada no sistema.",
+                    "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Erro ao carregar dados de demonstração: " + e.getMessage(),
+                "Erro",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdicionarBarbeiro;
     private javax.swing.JButton btnAdicionarServico;
     private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnCarregarDemo;
     private javax.swing.JButton btnEditarBarbeiro;
     private javax.swing.JButton btnEditarServico;
     private javax.swing.JButton btnRemoverBarbeiro;
