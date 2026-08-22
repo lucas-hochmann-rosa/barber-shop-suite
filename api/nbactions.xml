@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>run</actionName>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>org.springframework.boot:spring-boot-maven-plugin:3.2.5:run</goal>
+        </goals>
+        <properties>
+            <spring-boot.run.main-class>br.com.barbershop.api.Application</spring-boot.run.main-class>
+        </properties>
+    </action>
+    <action>
+        <actionName>debug</actionName>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>org.springframework.boot:spring-boot-maven-plugin:3.2.5:run</goal>
+        </goals>
+        <properties>
+            <spring-boot.run.main-class>br.com.barbershop.api.Application</spring-boot.run.main-class>
+            <spring-boot.run.jvmArguments>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address}</spring-boot.run.jvmArguments>
+            <jpda.listen>true</jpda.listen>
+        </properties>
+    </action>
+    <action>
+        <actionName>profile</actionName>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>org.springframework.boot:spring-boot-maven-plugin:3.2.5:run</goal>
+        </goals>
+        <properties>
+            <spring-boot.run.main-class>br.com.barbershop.api.Application</spring-boot.run.main-class>
+            <spring-boot.run.jvmArguments>${profiler.jvmargs.arg1} ${profiler.jvmargs.arg2} ${profiler.jvmargs.arg3} ${profiler.jvmargs.arg4} ${profiler.jvmargs.arg5}</spring-boot.run.jvmArguments>
+        </properties>
+    </action>
+</actions>
