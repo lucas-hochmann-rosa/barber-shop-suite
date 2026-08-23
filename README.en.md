@@ -244,9 +244,9 @@ Executes 66 automated tests:
 | --- | --- |
 | ![Desktop My Barbershop screen](docs/screenshots/minha-barbearia-desktop.png) | ![Desktop history screen](docs/screenshots/historico-desktop.png) |
 
-| Desktop Reports |
-| --- |
-| ![Desktop reports screen](docs/screenshots/relatorios-desktop.png) |
+| Desktop Reports | Desktop Manage Barber |
+| --- | --- |
+| ![Desktop reports screen](docs/screenshots/relatorios-desktop.png) | ![Desktop manage barber dialog](docs/screenshots/gerenciar-barbeiro-desktop.png) |
 
 ### Web
 

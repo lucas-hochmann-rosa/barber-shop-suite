@@ -60,6 +60,9 @@ public class DialogBarbeiro extends javax.swing.JDialog {
         UIUtil.estilizarBotaoPrimario(btnSalvar);
         UIUtil.estilizarBotaoSecundario(btnCancelar);
         UIUtil.estilizarBotaoSecundario(btnEscolherImagem);
+        setMinimumSize(new java.awt.Dimension(480, 330));
+        setSize(480, 330);
+        setLocationRelativeTo(getParent());
     }
 
     /**

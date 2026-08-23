@@ -11,6 +11,8 @@ import br.com.barbershop.ui.controller.RelatorioController;
 import br.com.barbershop.ui.support.UIUtil;
 import java.awt.*;
 import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -53,6 +55,10 @@ public class TelaHome extends javax.swing.JFrame {
     private final ClienteController clienteController;
     private final BarbeariaController barbeariaController;
     private final RelatorioController relatorioController;
+    private final JLabel lblMarcaNome = new JLabel("BARBERSHOP");
+    private final JLabel lblMarcaBarbearia = new JLabel("Barbearia do Lucas");
+    private final JButton btnMenuNovoAgendamento = new JButton("Novo agendamento");
+    private String cardAtual = "cardHome";
 
     /**
      * Monta a janela: inicializa os componentes gerados pelo NetBeans, aplica
@@ -87,14 +93,10 @@ public class TelaHome extends javax.swing.JFrame {
     }
 
     private void aplicarEstilos() {
+        configurarJanelaResponsiva();
+        configurarMenuLateral();
+
         pnlSideMenu.setBackground(UIUtil.COLOR_VERDE_CADEIRA);
-        UIUtil.aplicarLogo(lblLogo, 64, 64);
-        lblLogo.setBounds(0, 25, 200, 70);
-        btnHome.setBounds(10, 120, 180, 40);
-        btnMinhaBarbearia.setBounds(10, 170, 180, 40);
-        btnHistorico.setBounds(10, 220, 180, 40);
-        btnRelatorios.setBounds(10, 270, 180, 40);
-        btnSair.setBounds(10, 510, 180, 40);
 
         pnlHome.setBackground(UIUtil.COLOR_PORCELANA);
         pnlMinhaBarbearia.setBackground(UIUtil.COLOR_PORCELANA);
@@ -132,11 +134,13 @@ public class TelaHome extends javax.swing.JFrame {
         UIUtil.aplicarEstiloCampo(txtRelatorioDe);
         UIUtil.aplicarEstiloCampo(txtRelatorioAte);
 
-        JButton[] botoesMenu = {btnHome, btnMinhaBarbearia, btnHistorico, btnRelatorios};
+        JButton[] botoesMenu = {btnHome, btnMenuNovoAgendamento, btnMinhaBarbearia, btnHistorico, btnRelatorios};
         for (JButton btn : botoesMenu) {
             UIUtil.estilizarBotaoMenu(btn, false);
+            btn.setHorizontalAlignment(SwingConstants.LEFT);
         }
         UIUtil.estilizarBotaoMenu(btnSair, true);
+        btnSair.setHorizontalAlignment(SwingConstants.LEFT);
 
         UIUtil.estilizarBotaoPrimario(btnAgendar);
         UIUtil.estilizarBotaoPrimario(btnSalvarB);
@@ -148,6 +152,244 @@ public class TelaHome extends javax.swing.JFrame {
         UIUtil.estilizarBotaoSecundario(btnEditarBarbeiroB);
         UIUtil.estilizarBotaoPerigo(btnExcluirServico);
         UIUtil.estilizarBotaoPerigo(btnExcluirBarbeiro);
+
+        atualizarMenuAtivo();
+        aplicarLayoutResponsivo();
+        pack();
+        setExtendedState(getExtendedState() | Frame.MAXIMIZED_BOTH);
+        javax.swing.SwingUtilities.invokeLater(this::aplicarLayoutResponsivo);
+    }
+
+    private void configurarJanelaResponsiva() {
+        getContentPane().removeAll();
+        getContentPane().setLayout(null);
+        pnlHome.setLayout(null);
+        pnlMinhaBarbearia.setLayout(null);
+        pnlDadosGerais.setLayout(null);
+        pnlGerenciarServicos.setLayout(null);
+        pnlGerenciarBarbeiros.setLayout(null);
+        pnlClientes.setLayout(null);
+        pnlHistorico.setLayout(null);
+        pnlRelatorios.setLayout(null);
+        pnlSideMenu.setPreferredSize(new Dimension(230, 720));
+        pnlCards.setPreferredSize(new Dimension(1050, 720));
+        getContentPane().add(pnlSideMenu);
+        getContentPane().add(pnlCards);
+        setMinimumSize(new Dimension(1100, 720));
+        setPreferredSize(new Dimension(1280, 760));
+        setResizable(true);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                javax.swing.Timer timer = new javax.swing.Timer(250, evt -> aplicarLayoutResponsivo());
+                timer.setRepeats(false);
+                timer.start();
+            }
+        });
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                javax.swing.SwingUtilities.invokeLater(TelaHome.this::aplicarLayoutResponsivo);
+            }
+        });
+        pnlCards.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                javax.swing.SwingUtilities.invokeLater(TelaHome.this::aplicarLayoutResponsivo);
+            }
+        });
+        pnlHome.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                javax.swing.SwingUtilities.invokeLater(TelaHome.this::layoutHome);
+            }
+        });
+        pnlMinhaBarbearia.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                javax.swing.SwingUtilities.invokeLater(TelaHome.this::layoutMinhaBarbearia);
+            }
+        });
+        pnlHistorico.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                javax.swing.SwingUtilities.invokeLater(TelaHome.this::layoutHistorico);
+            }
+        });
+        pnlRelatorios.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                javax.swing.SwingUtilities.invokeLater(TelaHome.this::layoutRelatorios);
+            }
+        });
+    }
+
+    private void configurarMenuLateral() {
+        pnlSideMenu.removeAll();
+        pnlSideMenu.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlSideMenu.setBackground(UIUtil.COLOR_VERDE_CADEIRA);
+
+        UIUtil.aplicarLogo(lblLogo, 28, 28);
+        lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
+        pnlSideMenu.add(lblLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(24, 28, 30, 34));
+
+        lblMarcaNome.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblMarcaNome.setForeground(Color.WHITE);
+        pnlSideMenu.add(lblMarcaNome, new org.netbeans.lib.awtextra.AbsoluteConstraints(64, 26, 150, 24));
+
+        lblMarcaBarbearia.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblMarcaBarbearia.setForeground(new Color(0xF2, 0xF5, 0xF3, 0xB8));
+        pnlSideMenu.add(lblMarcaBarbearia, new org.netbeans.lib.awtextra.AbsoluteConstraints(64, 48, 150, 22));
+
+        btnHome.setText("Agenda");
+        btnMenuNovoAgendamento.setText("Novo agendamento");
+        btnMenuNovoAgendamento.addActionListener(this::btnAgendarActionPerformed);
+        btnMinhaBarbearia.setText("Minha barbearia");
+
+        pnlSideMenu.add(btnHome, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 92, 206, 46));
+        pnlSideMenu.add(btnMenuNovoAgendamento, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 142, 206, 46));
+        pnlSideMenu.add(btnMinhaBarbearia, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 192, 206, 46));
+        pnlSideMenu.add(btnHistorico, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 242, 206, 46));
+        pnlSideMenu.add(btnRelatorios, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 292, 206, 46));
+        pnlSideMenu.add(btnSair, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 640, 206, 44));
+    }
+
+    private void aplicarLayoutResponsivo() {
+        int rootW = Math.max(1100, getContentPane().getWidth());
+        int rootH = Math.max(720, getContentPane().getHeight());
+        pnlSideMenu.setBounds(0, 0, 230, rootH);
+        pnlCards.setBounds(230, 0, Math.max(600, rootW - 230), rootH);
+
+        int menuH = rootH;
+        btnSair.setBounds(12, Math.max(640, menuH - 76), 206, 44);
+        int cardsW = Math.max(600, pnlCards.getWidth());
+        int cardsH = Math.max(600, pnlCards.getHeight());
+        pnlHome.setBounds(0, 0, cardsW, cardsH);
+        pnlMinhaBarbearia.setBounds(0, 0, cardsW, cardsH);
+        pnlHistorico.setBounds(0, 0, cardsW, cardsH);
+        pnlRelatorios.setBounds(0, 0, cardsW, cardsH);
+
+        layoutHome();
+        layoutMinhaBarbearia();
+        layoutHistorico();
+        layoutRelatorios();
+        revalidate();
+        repaint();
+    }
+
+    private void atualizarMenuAtivo() {
+        JButton[] botoesMenu = {btnHome, btnMenuNovoAgendamento, btnMinhaBarbearia, btnHistorico, btnRelatorios};
+        for (JButton btn : botoesMenu) {
+            UIUtil.estilizarBotaoMenu(btn, false);
+            btn.setHorizontalAlignment(SwingConstants.LEFT);
+        }
+
+        JButton ativo = switch (cardAtual) {
+            case "cardBarbearia" -> btnMinhaBarbearia;
+            case "cardHistorico" -> btnHistorico;
+            case "cardRelatorios" -> btnRelatorios;
+            default -> btnHome;
+        };
+        UIUtil.estilizarBotaoMenuAtivo(ativo);
+        ativo.setHorizontalAlignment(SwingConstants.LEFT);
+    }
+
+    private void layoutHome() {
+        int w = Math.max(600, pnlHome.getWidth());
+        int h = Math.max(600, pnlHome.getHeight());
+        int p = 32;
+        int contentW = w - p * 2;
+
+        lblTitulo.setBounds(p, 28, Math.min(360, contentW - 220), 36);
+        btnAgendar.setBounds(Math.max(p, w - p - 210), 24, 210, 42);
+        jScrollPane4.setBounds(p, 92, contentW, 150);
+        lblSubtitulo.setBounds(p, 268, 190, 24);
+        lblHintAgendamentos.setBounds(p + 210, 268, 340, 24);
+        jScrollPane1.setBounds(p, 300, contentW, Math.max(260, h - 332));
+    }
+
+    private void layoutMinhaBarbearia() {
+        int w = Math.max(600, pnlMinhaBarbearia.getWidth());
+        int h = Math.max(600, pnlMinhaBarbearia.getHeight());
+        int p = 32;
+        jLabel7.setBounds(p, 28, 360, 36);
+        tabBarbearia.setBounds(p, 88, w - p * 2, h - 120);
+
+        layoutDadosGerais();
+        layoutTabelaAcoes(pnlGerenciarServicos, jScrollPane6, btnNovoServico, btnEditarServicoB, btnExcluirServico);
+        layoutTabelaAcoes(pnlGerenciarBarbeiros, jScrollPane7, btnNovoBarbeiro, btnEditarBarbeiroB, btnExcluirBarbeiro);
+        layoutClientes();
+    }
+
+    private void layoutDadosGerais() {
+        int w = Math.max(560, pnlDadosGerais.getWidth());
+        int h = Math.max(460, pnlDadosGerais.getHeight());
+        int p = 16;
+        int contentW = w - p * 2;
+
+        jLabel8.setBounds(p, 16, 120, 22);
+        txtNomeB.setBounds(p, 40, contentW, 34);
+        jLabel9.setBounds(p, 84, 80, 22);
+        txtCEPB.setBounds(p, 108, Math.min(180, contentW), 34);
+        jLabel10.setBounds(p, 152, 180, 22);
+        jScrollPane5.setBounds(p, 176, contentW, Math.max(100, h - 300));
+        jLabel13.setBounds(p, h - 108, Math.min(430, contentW), 22);
+        jLabel14.setBounds(p, h - 76, 70, 24);
+        txtHorarioAbertura.setBounds(p + 78, h - 80, 86, 34);
+        jLabel15.setBounds(p + 184, h - 76, 90, 24);
+        txtHorarioFechamento.setBounds(p + 280, h - 80, 86, 34);
+        btnSalvarB.setBounds(Math.max(p, w - p - 170), h - 50, 170, 38);
+    }
+
+    private void layoutTabelaAcoes(javax.swing.JPanel panel, javax.swing.JScrollPane scroll,
+                                   JButton novo, JButton editar, JButton excluir) {
+        int w = Math.max(560, panel.getWidth());
+        int h = Math.max(420, panel.getHeight());
+        int p = 16;
+        scroll.setBounds(p, p, w - p * 2, h - 86);
+        novo.setBounds(p, h - 54, 110, 38);
+        editar.setBounds(p + 122, h - 54, 110, 38);
+        excluir.setBounds(p + 244, h - 54, 110, 38);
+    }
+
+    private void layoutClientes() {
+        int w = Math.max(560, pnlClientes.getWidth());
+        int h = Math.max(420, pnlClientes.getHeight());
+        int p = 16;
+        jLabel16.setBounds(p, 20, 60, 24);
+        txtBuscaClientes.setBounds(p + 70, 16, Math.min(360, w - p * 2 - 70), 34);
+        jScrollPane9.setBounds(p, 64, w - p * 2, h - 80);
+    }
+
+    private void layoutHistorico() {
+        int w = Math.max(600, pnlHistorico.getWidth());
+        int h = Math.max(600, pnlHistorico.getHeight());
+        int p = 32;
+        jLabel11.setBounds(p, 28, Math.min(460, w - p * 2), 36);
+        jLabel12.setBounds(p, 90, 60, 24);
+        txtBuscaHistorico.setBounds(p + 70, 86, Math.min(420, w - p * 2 - 70), 34);
+        jScrollPane8.setBounds(p, 138, w - p * 2, Math.max(360, h - 170));
+    }
+
+    private void layoutRelatorios() {
+        int w = Math.max(600, pnlRelatorios.getWidth());
+        int h = Math.max(600, pnlRelatorios.getHeight());
+        int p = 32;
+        int gap = 28;
+        int colW = (w - p * 2 - gap) / 2;
+        int tableH = Math.max(320, h - 238);
+
+        jLabel17.setBounds(p, 28, 260, 36);
+        jLabel18.setBounds(p, 90, 34, 24);
+        txtRelatorioDe.setBounds(p + 38, 86, 118, 34);
+        jLabel19.setBounds(p + 176, 90, 34, 24);
+        txtRelatorioAte.setBounds(p + 214, 86, 118, 34);
+        btnGerarRelatorio.setBounds(p + 352, 86, 120, 34);
+        lblFaturamentoTotal.setBounds(p, 142, Math.min(520, w - p * 2), 28);
+        jLabel20.setBounds(p, 188, 220, 24);
+        jScrollPane10.setBounds(p, 216, colW, tableH);
+        jLabel21.setBounds(p + colW + gap, 188, 220, 24);
+        jScrollPane11.setBounds(p + colW + gap, 216, colW, tableH);
     }
 
     /**
@@ -156,6 +398,9 @@ public class TelaHome extends javax.swing.JFrame {
      * tela na abertura.
      */
     private void carregarDados() {
+        if (br.com.barbershop.app.AppContext.getInstance().getBarbeariaAtual() != null) {
+            lblMarcaBarbearia.setText(br.com.barbershop.app.AppContext.getInstance().getBarbeariaAtual().getNome());
+        }
         agendaController.carregarAgendamentos();
         catalogoController.carregarGridServicos();
         catalogoController.carregarTabelaServicos();
@@ -659,6 +904,8 @@ public class TelaHome extends javax.swing.JFrame {
     private void btnHomeActionPerformed(java.awt.event.ActionEvent evt) {
         CardLayout cl = (CardLayout) pnlCards.getLayout();
         cl.show(pnlCards, "cardHome");
+        cardAtual = "cardHome";
+        atualizarMenuAtivo();
         agendaController.carregarAgendamentos();
         catalogoController.carregarGridServicos();
     }
@@ -671,6 +918,8 @@ public class TelaHome extends javax.swing.JFrame {
     private void btnMinhaBarbeariaActionPerformed(java.awt.event.ActionEvent evt) {
         CardLayout cl = (CardLayout) pnlCards.getLayout();
         cl.show(pnlCards, "cardBarbearia");
+        cardAtual = "cardBarbearia";
+        atualizarMenuAtivo();
         barbeariaController.carregarDados();
         catalogoController.carregarTabelaServicos();
         catalogoController.carregarTabelaBarbeiros();
@@ -683,6 +932,8 @@ public class TelaHome extends javax.swing.JFrame {
     private void btnHistoricoActionPerformed(java.awt.event.ActionEvent evt) {
         CardLayout cl = (CardLayout) pnlCards.getLayout();
         cl.show(pnlCards, "cardHistorico");
+        cardAtual = "cardHistorico";
+        atualizarMenuAtivo();
         historicoController.carregarHistorico();
     }
 
@@ -695,6 +946,8 @@ public class TelaHome extends javax.swing.JFrame {
     private void btnRelatoriosActionPerformed(java.awt.event.ActionEvent evt) {
         CardLayout cl = (CardLayout) pnlCards.getLayout();
         cl.show(pnlCards, "cardRelatorios");
+        cardAtual = "cardRelatorios";
+        atualizarMenuAtivo();
         relatorioController.prepararPeriodoPadraoSeVazio();
         relatorioController.gerar();
     }

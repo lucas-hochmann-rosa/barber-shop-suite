@@ -11,6 +11,7 @@ O sufixo indica a interface capturada: `-desktop` para Swing e `-web` para HTML/
 | `minha-barbearia-desktop.png` | Desktop → `TelaHome` → "Minha Barbearia" |
 | `historico-desktop.png` | Desktop → `TelaHome` → "Histórico" |
 | `novo-agendamento-desktop.png` | Desktop → `TelaNovoAgendamento` |
+| `gerenciar-barbeiro-desktop.png` | Desktop → diálogo "Gerenciar Barbeiro" |
 | `relatorios-desktop.png` | Desktop → `TelaHome` → "Relatórios" |
 | `login-web.png` | Web → `index.html` |
 | `home-web.png` | Web → `agenda.html` |

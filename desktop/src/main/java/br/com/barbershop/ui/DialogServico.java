@@ -64,6 +64,9 @@ public class DialogServico extends javax.swing.JDialog {
         UIUtil.estilizarBotaoPrimario(btnSalvar);
         UIUtil.estilizarBotaoSecundario(btnCancelar);
         UIUtil.estilizarBotaoSecundario(btnEscolherImagem);
+        setMinimumSize(new java.awt.Dimension(520, 360));
+        setSize(520, 360);
+        setLocationRelativeTo(getParent());
     }
 
     /**

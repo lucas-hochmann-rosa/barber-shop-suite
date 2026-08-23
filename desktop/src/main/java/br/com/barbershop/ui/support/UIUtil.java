@@ -203,6 +203,16 @@ public class UIUtil {
                         + "focusedBorderColor: #C8912F;");
     }
 
+    public static void estilizarBotaoMenuAtivo(JButton btn) {
+        if (btn == null) return;
+        estilizarBotaoPrimario(btn);
+        btn.putClientProperty(FlatClientProperties.STYLE,
+                "arc: 10; borderWidth: 2; focusWidth: 1; innerFocusWidth: 0;"
+                        + "background: #2E7D6B; foreground: #FFFFFF; borderColor: #C8912F;"
+                        + "hoverBackground: #3B927F; pressedBackground: #14483F;"
+                        + "focusedBorderColor: #C8912F;");
+    }
+
     public static void aplicarEstiloTabela(JTable tabela) {
         if (tabela == null) return;
         tabela.setRowHeight(30);

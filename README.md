@@ -525,9 +525,9 @@ java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.a
 | --- | --- |
 | ![Minha Barbearia desktop](docs/screenshots/minha-barbearia-desktop.png) | ![Histórico desktop](docs/screenshots/historico-desktop.png) |
 
-| Relatórios Desktop |
-| --- |
-| ![Relatórios desktop](docs/screenshots/relatorios-desktop.png) |
+| Relatórios Desktop | Gerenciar Barbeiro Desktop |
+| --- | --- |
+| ![Relatórios desktop](docs/screenshots/relatorios-desktop.png) | ![Gerenciar barbeiro desktop](docs/screenshots/gerenciar-barbeiro-desktop.png) |
 
 ### Web
 
