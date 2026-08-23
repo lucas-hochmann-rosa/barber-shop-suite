@@ -122,19 +122,21 @@ public class TelaHome extends javax.swing.JFrame {
             UIUtil.aplicarEstiloTabela(tabela);
         }
 
+        UIUtil.aplicarEstiloCampo(txtBuscaClientes);
+        UIUtil.aplicarEstiloCampo(txtBuscaHistorico);
+        UIUtil.aplicarEstiloCampo(txtNomeB);
+        UIUtil.aplicarEstiloCampo(txtCEPB);
+        UIUtil.aplicarEstiloCampo(txtCulturaB);
+        UIUtil.aplicarEstiloCampo(txtHorarioAbertura);
+        UIUtil.aplicarEstiloCampo(txtHorarioFechamento);
+        UIUtil.aplicarEstiloCampo(txtRelatorioDe);
+        UIUtil.aplicarEstiloCampo(txtRelatorioAte);
+
         JButton[] botoesMenu = {btnHome, btnMinhaBarbearia, btnHistorico, btnRelatorios};
         for (JButton btn : botoesMenu) {
-            btn.setBackground(UIUtil.COLOR_VERDE_CLARO);
-            btn.setForeground(Color.WHITE);
-            btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
-            btn.setFocusPainted(false);
-            btn.setBorder(UIUtil.criarBordaBotao(new Color(0xDC, 0xE3, 0xE0, 0xAA), 16));
+            UIUtil.estilizarBotaoMenu(btn, false);
         }
-        btnSair.setBackground(UIUtil.COLOR_OXBLOOD);
-        btnSair.setForeground(Color.WHITE);
-        btnSair.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        btnSair.setFocusPainted(false);
-        btnSair.setBorder(UIUtil.criarBordaBotao(new Color(0xDC, 0xE3, 0xE0, 0xAA), 16));
+        UIUtil.estilizarBotaoMenu(btnSair, true);
 
         UIUtil.estilizarBotaoPrimario(btnAgendar);
         UIUtil.estilizarBotaoPrimario(btnSalvarB);

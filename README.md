@@ -511,21 +511,37 @@ java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.a
 
 ## 📸 Screenshots
 
+### Desktop
+
 | Login Desktop | Cadastro Inicial Desktop |
 | --- | --- |
-| ![Tela de login](docs/screenshots/login.png) | ![Cadastro inicial](docs/screenshots/cadastro-inicial.png) |
+| ![Tela de login desktop](docs/screenshots/login-desktop.png) | ![Cadastro inicial desktop](docs/screenshots/cadastro-inicial-desktop.png) |
 
 | Home Desktop (Agenda) | Novo Agendamento Desktop |
 | --- | --- |
-| ![Home](docs/screenshots/home.png) | ![Novo agendamento](docs/screenshots/novo-agendamento.png) |
+| ![Home desktop](docs/screenshots/home-desktop.png) | ![Novo agendamento desktop](docs/screenshots/novo-agendamento-desktop.png) |
 
 | Minha Barbearia Desktop | Histórico Desktop |
 | --- | --- |
-| ![Minha Barbearia](docs/screenshots/minha-barbearia.png) | ![Histórico](docs/screenshots/historico.png) |
+| ![Minha Barbearia desktop](docs/screenshots/minha-barbearia-desktop.png) | ![Histórico desktop](docs/screenshots/historico-desktop.png) |
 
 | Relatórios Desktop |
 | --- |
-| ![Relatórios](docs/screenshots/relatorios.png) |
+| ![Relatórios desktop](docs/screenshots/relatorios-desktop.png) |
+
+### Web
+
+| Login Web | Home Web (Agenda) |
+| --- | --- |
+| ![Tela de login web](docs/screenshots/login-web.png) | ![Home web](docs/screenshots/home-web.png) |
+
+| Novo Agendamento Web | Minha Barbearia Web |
+| --- | --- |
+| ![Novo agendamento web](docs/screenshots/novo-agendamento-web.png) | ![Minha Barbearia web](docs/screenshots/minha-barbearia-web.png) |
+
+| Histórico Web | Relatórios Web |
+| --- | --- |
+| ![Histórico web](docs/screenshots/historico-web.png) | ![Relatórios web](docs/screenshots/relatorios-web.png) |
 
 ---
 

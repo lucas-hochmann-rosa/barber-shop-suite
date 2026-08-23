@@ -37,6 +37,15 @@ public class TelaNovoAgendamento extends javax.swing.JFrame {
 
     public TelaNovoAgendamento() {
         initComponents();
+        UIUtil.aplicarEstiloPainelRaiz((javax.swing.JComponent) getContentPane());
+        UIUtil.aplicarEstiloCampo(txtCliente);
+        UIUtil.aplicarEstiloCampo(txtContato);
+        UIUtil.aplicarEstiloCampo(txtData);
+        UIUtil.aplicarEstiloCampo(txtHora);
+        UIUtil.aplicarEstiloCombo(cbServico);
+        UIUtil.aplicarEstiloCombo(cbBarbeiro);
+        UIUtil.aplicarEstiloCombo(cbOrigem);
+        UIUtil.aplicarEstiloPreview(lblFotoBarbeiro, 16);
         UIUtil.estilizarBotaoPrimario(btnSalvar);
         UIUtil.aplicarIcone(this);
         setLocationRelativeTo(null);

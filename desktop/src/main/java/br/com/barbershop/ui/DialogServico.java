@@ -56,6 +56,11 @@ public class DialogServico extends javax.swing.JDialog {
     }
 
     private void aplicarEstilos() {
+        UIUtil.aplicarEstiloPainelRaiz((javax.swing.JComponent) getContentPane());
+        UIUtil.aplicarEstiloCampo(txtNome);
+        UIUtil.aplicarEstiloCampo(txtPreco);
+        UIUtil.aplicarEstiloSpinner(spnDuracao);
+        UIUtil.aplicarEstiloPreview(lblPreview, 14);
         UIUtil.estilizarBotaoPrimario(btnSalvar);
         UIUtil.estilizarBotaoSecundario(btnCancelar);
         UIUtil.estilizarBotaoSecundario(btnEscolherImagem);

@@ -228,6 +228,42 @@ Executes 66 automated tests:
 
 ---
 
+## 📸 Screenshots
+
+### Desktop
+
+| Desktop Login | Desktop Initial Setup |
+| --- | --- |
+| ![Desktop login screen](docs/screenshots/login-desktop.png) | ![Desktop initial setup screen](docs/screenshots/cadastro-inicial-desktop.png) |
+
+| Desktop Home (Schedule) | Desktop New Appointment |
+| --- | --- |
+| ![Desktop home screen](docs/screenshots/home-desktop.png) | ![Desktop new appointment screen](docs/screenshots/novo-agendamento-desktop.png) |
+
+| Desktop My Barbershop | Desktop History |
+| --- | --- |
+| ![Desktop My Barbershop screen](docs/screenshots/minha-barbearia-desktop.png) | ![Desktop history screen](docs/screenshots/historico-desktop.png) |
+
+| Desktop Reports |
+| --- |
+| ![Desktop reports screen](docs/screenshots/relatorios-desktop.png) |
+
+### Web
+
+| Web Login | Web Home (Schedule) |
+| --- | --- |
+| ![Web login screen](docs/screenshots/login-web.png) | ![Web home screen](docs/screenshots/home-web.png) |
+
+| Web New Appointment | Web My Barbershop |
+| --- | --- |
+| ![Web new appointment screen](docs/screenshots/novo-agendamento-web.png) | ![Web My Barbershop screen](docs/screenshots/minha-barbearia-web.png) |
+
+| Web History | Web Reports |
+| --- | --- |
+| ![Web history screen](docs/screenshots/historico-web.png) | ![Web reports screen](docs/screenshots/relatorios-web.png) |
+
+---
+
 ## 👨‍💻 Author
 
 **Lucas Hochmann Rosa**

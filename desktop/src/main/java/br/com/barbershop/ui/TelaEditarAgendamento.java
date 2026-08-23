@@ -62,15 +62,17 @@ public class TelaEditarAgendamento extends JFrame {
         UIUtil.aplicarIcone(this);
 
         initUI();
+        aplicarEstilos();
         carregarDados();
     }
 
     /** Monta manualmente todos os componentes e o layout da tela (GridBagLayout). */
     private void initUI() {
         JPanel root = new JPanel(new BorderLayout(10, 10));
-        root.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        UIUtil.aplicarEstiloPainelRaiz(root);
 
         JPanel form = new JPanel(new GridBagLayout());
+        form.setOpaque(false);
         GridBagConstraints gc = new GridBagConstraints();
         gc.insets = new Insets(6, 6, 6, 6);
         gc.fill = GridBagConstraints.HORIZONTAL;
@@ -115,6 +117,7 @@ public class TelaEditarAgendamento extends JFrame {
         root.add(form, BorderLayout.CENTER);
 
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        actions.setOpaque(false);
         btnWhatsApp = new JButton("WhatsApp");
         btnCancelar = new JButton("Cancelar Agendamento");
         btnExcluir = new JButton("Excluir");
@@ -142,6 +145,16 @@ public class TelaEditarAgendamento extends JFrame {
         root.add(actions, BorderLayout.SOUTH);
 
         setContentPane(root);
+    }
+
+    private void aplicarEstilos() {
+        UIUtil.aplicarEstiloCampo(txtCliente);
+        UIUtil.aplicarEstiloCampo(txtContato);
+        UIUtil.aplicarEstiloCampo(txtDataHora);
+        UIUtil.aplicarEstiloCombo(cbServico);
+        UIUtil.aplicarEstiloCombo(cbBarbeiro);
+        UIUtil.aplicarEstiloCombo(cbOrigem);
+        UIUtil.aplicarEstiloPreview(lblFotoBarbeiro, 16);
     }
 
     /** Helper de layout: adiciona uma linha "rótulo + campo" ao formulário em GridBagLayout. */

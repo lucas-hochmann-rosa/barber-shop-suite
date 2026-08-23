@@ -39,6 +39,7 @@ public class TelaCadastroInicial extends javax.swing.JFrame {
     }
 
     private void aplicarEstilos() {
+        UIUtil.aplicarEstiloPainelRaiz((javax.swing.JComponent) getContentPane());
         UIUtil.aplicarLogo(lblTitulo, 40, 40);
         lblTitulo.setText("Configuração Inicial");
         UIUtil.aplicarEstiloCartao(pnlDados);
@@ -65,6 +66,13 @@ public class TelaCadastroInicial extends javax.swing.JFrame {
         UIUtil.aplicarEstiloScroll(jScrollPane1);
         UIUtil.aplicarEstiloScroll(jScrollPane2);
         UIUtil.aplicarEstiloScroll(jScrollPane3);
+
+        UIUtil.aplicarEstiloCampo(txtNomeBarbearia);
+        UIUtil.aplicarEstiloCampo(txtCEP);
+        UIUtil.aplicarEstiloCampo(txtDataFundacao);
+        UIUtil.aplicarEstiloCampo(txtCultura);
+        UIUtil.aplicarEstiloCampo(txtLogin);
+        UIUtil.aplicarEstiloCampo(txtSenha);
     }
 
     /** Redesenha a tabela de serviços a partir da lista em memória. */

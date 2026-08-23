@@ -10,17 +10,18 @@ import br.com.barbershop.ui.DialogServico;
 import br.com.barbershop.ui.support.UIUtil;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -85,39 +86,43 @@ public class CatalogoController {
             for (Servico s : servicos) {
                 JPanel card = new JPanel();
                 card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-                card.setPreferredSize(new Dimension(130, 175));
-                card.setBackground(UIUtil.COLOR_BRANCO);
-                card.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(UIUtil.COLOR_NEBLINA, 1),
-                        BorderFactory.createEmptyBorder(6, 6, 8, 6)));
+                card.setPreferredSize(new Dimension(138, 130));
+                card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                UIUtil.aplicarEstiloCartao(card);
 
                 JLabel lblImg = new JLabel();
                 lblImg.setAlignmentX(Component.CENTER_ALIGNMENT);
-                UIUtil.exibirMiniatura(lblImg, s.getFotoCaminho(), 110, 80, placeholderServico(s));
+                lblImg.setCursor(card.getCursor());
+                UIUtil.exibirMiniatura(lblImg, s.getFotoCaminho(), 104, 58, placeholderServico(s));
 
                 JLabel lblNome = new JLabel(s.getNome());
                 lblNome.setAlignmentX(Component.CENTER_ALIGNMENT);
                 lblNome.setFont(new Font("Segoe UI", Font.BOLD, 12));
                 lblNome.setForeground(UIUtil.COLOR_TINTA);
+                lblNome.setCursor(card.getCursor());
 
                 JLabel lblPreco = new JLabel(moedaFormat.format(s.getPreco()));
                 lblPreco.setAlignmentX(Component.CENTER_ALIGNMENT);
                 lblPreco.setFont(new Font("Segoe UI", Font.BOLD, 12));
                 lblPreco.setForeground(UIUtil.COLOR_VERDE_CADEIRA);
+                lblPreco.setCursor(card.getCursor());
 
-                JButton btn = new JButton("Agendar");
-                btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-                UIUtil.estilizarBotaoPrimario(btn);
-                btn.addActionListener(e -> onAgendarServico.accept(s));
+                MouseAdapter abrirAgendamento = new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        onAgendarServico.accept(s);
+                    }
+                };
+                card.addMouseListener(abrirAgendamento);
+                lblImg.addMouseListener(abrirAgendamento);
+                lblNome.addMouseListener(abrirAgendamento);
+                lblPreco.addMouseListener(abrirAgendamento);
 
-                card.add(Box.createVerticalStrut(4));
                 card.add(lblImg);
-                card.add(Box.createVerticalStrut(4));
+                card.add(Box.createVerticalStrut(6));
                 card.add(lblNome);
                 card.add(Box.createVerticalStrut(2));
                 card.add(lblPreco);
-                card.add(Box.createVerticalStrut(6));
-                card.add(btn);
 
                 pnlServicosGrid.add(card);
             }
