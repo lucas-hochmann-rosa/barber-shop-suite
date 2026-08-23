@@ -57,7 +57,6 @@ public class TelaHome extends javax.swing.JFrame {
     private final RelatorioController relatorioController;
     private final JLabel lblMarcaNome = new JLabel("BARBERSHOP");
     private final JLabel lblMarcaBarbearia = new JLabel("Barbearia do Lucas");
-    private final JButton btnMenuNovoAgendamento = new JButton("Novo agendamento");
     private String cardAtual = "cardHome";
 
     /**
@@ -134,7 +133,7 @@ public class TelaHome extends javax.swing.JFrame {
         UIUtil.aplicarEstiloCampo(txtRelatorioDe);
         UIUtil.aplicarEstiloCampo(txtRelatorioAte);
 
-        JButton[] botoesMenu = {btnHome, btnMenuNovoAgendamento, btnMinhaBarbearia, btnHistorico, btnRelatorios};
+        JButton[] botoesMenu = {btnHome, btnMinhaBarbearia, btnHistorico, btnRelatorios};
         for (JButton btn : botoesMenu) {
             UIUtil.estilizarBotaoMenu(btn, false);
             btn.setHorizontalAlignment(SwingConstants.LEFT);
@@ -242,15 +241,12 @@ public class TelaHome extends javax.swing.JFrame {
         pnlSideMenu.add(lblMarcaBarbearia, new org.netbeans.lib.awtextra.AbsoluteConstraints(64, 48, 150, 22));
 
         btnHome.setText("Agenda");
-        btnMenuNovoAgendamento.setText("Novo agendamento");
-        btnMenuNovoAgendamento.addActionListener(this::btnAgendarActionPerformed);
         btnMinhaBarbearia.setText("Minha barbearia");
 
         pnlSideMenu.add(btnHome, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 92, 206, 46));
-        pnlSideMenu.add(btnMenuNovoAgendamento, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 142, 206, 46));
-        pnlSideMenu.add(btnMinhaBarbearia, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 192, 206, 46));
-        pnlSideMenu.add(btnHistorico, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 242, 206, 46));
-        pnlSideMenu.add(btnRelatorios, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 292, 206, 46));
+        pnlSideMenu.add(btnMinhaBarbearia, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 142, 206, 46));
+        pnlSideMenu.add(btnHistorico, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 192, 206, 46));
+        pnlSideMenu.add(btnRelatorios, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 242, 206, 46));
         pnlSideMenu.add(btnSair, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 640, 206, 44));
     }
 
@@ -278,7 +274,7 @@ public class TelaHome extends javax.swing.JFrame {
     }
 
     private void atualizarMenuAtivo() {
-        JButton[] botoesMenu = {btnHome, btnMenuNovoAgendamento, btnMinhaBarbearia, btnHistorico, btnRelatorios};
+        JButton[] botoesMenu = {btnHome, btnMinhaBarbearia, btnHistorico, btnRelatorios};
         for (JButton btn : botoesMenu) {
             UIUtil.estilizarBotaoMenu(btn, false);
             btn.setHorizontalAlignment(SwingConstants.LEFT);
