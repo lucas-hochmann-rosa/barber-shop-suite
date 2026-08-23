@@ -46,6 +46,28 @@
 
 html {
     -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--verde-claro) var(--porcelana);
+    scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--porcelana);
+    border-radius: var(--canto);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--neblina);
+    border: 3px solid var(--porcelana);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--verde-claro);
 }
 
 body,

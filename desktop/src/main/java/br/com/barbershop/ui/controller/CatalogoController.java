@@ -66,6 +66,8 @@ public class CatalogoController {
     public void configurar() {
         tblGerenciarServicos.setRowSorter(new TableRowSorter<>((DefaultTableModel) tblGerenciarServicos.getModel()));
         tblGerenciarBarbeiros.setRowSorter(new TableRowSorter<>((DefaultTableModel) tblGerenciarBarbeiros.getModel()));
+        UIUtil.aplicarRenderizadorZebra(tblGerenciarServicos);
+        UIUtil.aplicarRenderizadorZebra(tblGerenciarBarbeiros);
     }
 
     /**
@@ -237,13 +239,14 @@ public class CatalogoController {
      */
     public void editarServico() {
         int row = tblGerenciarServicos.getSelectedRow();
-        if (row < 0 || servicosGerenciarLista == null || row >= servicosGerenciarLista.size()) {
+        int modelRow = row >= 0 ? tblGerenciarServicos.convertRowIndexToModel(row) : -1;
+        if (modelRow < 0 || servicosGerenciarLista == null || modelRow >= servicosGerenciarLista.size()) {
             JOptionPane.showMessageDialog(parent, "Selecione um serviço para editar.");
             return;
         }
 
         try {
-            Servico original = servicosGerenciarLista.get(row);
+            Servico original = servicosGerenciarLista.get(modelRow);
             // Trabalhar com uma cópia para evitar alterar a tabela caso cancele
             Servico copia = new Servico(original.getId(), original.getBarbeariaId(), original.getNome(), original.getPreco(), original.getImagemBase64(), original.getDuracaoMinutos());
 
@@ -275,12 +278,13 @@ public class CatalogoController {
      */
     public void excluirServico() {
         int row = tblGerenciarServicos.getSelectedRow();
-        if (row < 0 || servicosGerenciarLista == null || row >= servicosGerenciarLista.size()) {
+        int modelRow = row >= 0 ? tblGerenciarServicos.convertRowIndexToModel(row) : -1;
+        if (modelRow < 0 || servicosGerenciarLista == null || modelRow >= servicosGerenciarLista.size()) {
             JOptionPane.showMessageDialog(parent, "Selecione um serviço para excluir.");
             return;
         }
 
-        Servico s = servicosGerenciarLista.get(row);
+        Servico s = servicosGerenciarLista.get(modelRow);
         int ok = JOptionPane.showConfirmDialog(parent,
                 "Excluir o serviço '" + s.getNome() + "'?\nIsso pode afetar agendamentos existentes.",
                 "Confirmar", JOptionPane.YES_NO_OPTION);
@@ -340,13 +344,14 @@ public class CatalogoController {
      */
     public void editarBarbeiro() {
         int row = tblGerenciarBarbeiros.getSelectedRow();
-        if (row < 0 || barbeirosGerenciarLista == null || row >= barbeirosGerenciarLista.size()) {
+        int modelRow = row >= 0 ? tblGerenciarBarbeiros.convertRowIndexToModel(row) : -1;
+        if (modelRow < 0 || barbeirosGerenciarLista == null || modelRow >= barbeirosGerenciarLista.size()) {
             JOptionPane.showMessageDialog(parent, "Selecione um barbeiro para editar.");
             return;
         }
 
         try {
-            Barbeiro original = barbeirosGerenciarLista.get(row);
+            Barbeiro original = barbeirosGerenciarLista.get(modelRow);
             Barbeiro copia = new Barbeiro(original.getId(), original.getBarbeariaId(), original.getNome(), original.getImagemBase64());
 
             DialogBarbeiro dlg = new DialogBarbeiro((java.awt.Frame) parent, true, copia);
@@ -375,12 +380,13 @@ public class CatalogoController {
      */
     public void excluirBarbeiro() {
         int row = tblGerenciarBarbeiros.getSelectedRow();
-        if (row < 0 || barbeirosGerenciarLista == null || row >= barbeirosGerenciarLista.size()) {
+        int modelRow = row >= 0 ? tblGerenciarBarbeiros.convertRowIndexToModel(row) : -1;
+        if (modelRow < 0 || barbeirosGerenciarLista == null || modelRow >= barbeirosGerenciarLista.size()) {
             JOptionPane.showMessageDialog(parent, "Selecione um barbeiro para excluir.");
             return;
         }
 
-        Barbeiro barb = barbeirosGerenciarLista.get(row);
+        Barbeiro barb = barbeirosGerenciarLista.get(modelRow);
         int ok = JOptionPane.showConfirmDialog(parent,
                 "Excluir o barbeiro '" + barb.getNome() + "'?\nIsso pode afetar agendamentos existentes.",
                 "Confirmar", JOptionPane.YES_NO_OPTION);

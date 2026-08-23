@@ -4,6 +4,7 @@ import br.com.barbershop.app.AppContext;
 import br.com.barbershop.model.Barbearia;
 import br.com.barbershop.model.Cliente;
 import br.com.barbershop.service.ClienteService;
+import br.com.barbershop.ui.support.UIUtil;
 import java.awt.Component;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
@@ -35,6 +36,7 @@ public class ClienteController {
     /** Configura o ordenador da tabela. */
     public void configurar() {
         tblClientes.setRowSorter(new TableRowSorter<>((DefaultTableModel) tblClientes.getModel()));
+        UIUtil.aplicarRenderizadorZebra(tblClientes);
     }
 
     /** Recarrega {@code tblClientes} com os clientes da barbearia atual. */

@@ -81,9 +81,14 @@ public class UIUtil {
         UIManager.put("Component.accentColor", COLOR_VERDE_CADEIRA);
         UIManager.put("Component.focusColor", new Color(0x2E, 0x7D, 0x6B, 0x60));
         UIManager.put("Component.arc", 6);
-        UIManager.put("Button.arc", 6);
+        UIManager.put("Button.arc", 8);
         UIManager.put("TextComponent.arc", 6);
         UIManager.put("ProgressBar.arc", 6);
+        UIManager.put("ScrollBar.thumbArc", 8);
+        UIManager.put("ScrollBar.trackArc", 8);
+        UIManager.put("ScrollBar.thumb", COLOR_NEBLINA);
+        UIManager.put("ScrollBar.hoverThumbColor", COLOR_FUMACA);
+        UIManager.put("ScrollBar.pressedThumbColor", COLOR_VERDE_CLARO);
 
         UIManager.put("TableHeader.background", COLOR_VERDE_CADEIRA);
         UIManager.put("TableHeader.foreground", Color.WHITE);
@@ -92,13 +97,17 @@ public class UIUtil {
 
         UIManager.put("Table.background", COLOR_BRANCO);
         UIManager.put("Table.foreground", COLOR_TINTA);
-        UIManager.put("Table.gridColor", COLOR_NEBLINA);
+        UIManager.put("Table.gridColor", COLOR_PORCELANA);
         UIManager.put("Table.selectionBackground", new Color(0x2E, 0x7D, 0x6B, 0x33));
         UIManager.put("Table.selectionForeground", COLOR_TINTA);
-        UIManager.put("Table.rowHeight", 28);
+        UIManager.put("Table.rowHeight", 30);
 
         UIManager.put("TabbedPane.selectedBackground", COLOR_VERDE_CADEIRA);
         UIManager.put("TabbedPane.selectedForeground", Color.WHITE);
+        UIManager.put("TabbedPane.background", COLOR_BRANCO);
+        UIManager.put("TabbedPane.foreground", COLOR_TINTA);
+        UIManager.put("TabbedPane.hoverColor", new Color(0x2E, 0x7D, 0x6B, 0x18));
+        UIManager.put("TabbedPane.focusColor", COLOR_LATAO);
         UIManager.put("TabbedPane.underlineColor", COLOR_LATAO);
         UIManager.put("TabbedPane.showTabSeparators", true);
         UIManager.put("TabbedPane.tabSeparatorsFullHeight", true);
@@ -113,7 +122,9 @@ public class UIUtil {
         btn.setForeground(Color.WHITE);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btn.setFocusPainted(false);
-        btn.setBorder(BorderFactory.createEmptyBorder(6, 14, 6, 14));
+        btn.setBorder(BorderFactory.createCompoundBorder(
+                new BordaArredondada(COLOR_VERDE_CADEIRA, 8),
+                BorderFactory.createEmptyBorder(7, 16, 7, 16)));
     }
 
     /**
@@ -126,8 +137,8 @@ public class UIUtil {
         btn.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         btn.setFocusPainted(false);
         btn.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(COLOR_NEBLINA, 1),
-                BorderFactory.createEmptyBorder(5, 12, 5, 12)));
+                new BordaArredondada(COLOR_NEBLINA, 8),
+                BorderFactory.createEmptyBorder(7, 15, 7, 15)));
     }
 
     /**
@@ -139,7 +150,58 @@ public class UIUtil {
         btn.setForeground(Color.WHITE);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btn.setFocusPainted(false);
-        btn.setBorder(BorderFactory.createEmptyBorder(6, 14, 6, 14));
+        btn.setBorder(BorderFactory.createCompoundBorder(
+                new BordaArredondada(COLOR_OXBLOOD, 8),
+                BorderFactory.createEmptyBorder(7, 16, 7, 16)));
+    }
+
+    public static Border criarBordaBotao(Color cor, int paddingHorizontal) {
+        return BorderFactory.createCompoundBorder(
+                new BordaArredondada(cor, 8),
+                BorderFactory.createEmptyBorder(7, paddingHorizontal, 7, paddingHorizontal));
+    }
+
+    public static void aplicarEstiloTabela(JTable tabela) {
+        if (tabela == null) return;
+        tabela.setRowHeight(30);
+        tabela.setShowHorizontalLines(true);
+        tabela.setShowVerticalLines(false);
+        tabela.setGridColor(COLOR_PORCELANA);
+        tabela.setFillsViewportHeight(true);
+        tabela.setSelectionBackground(new Color(0x2E, 0x7D, 0x6B, 0x33));
+        tabela.setSelectionForeground(COLOR_TINTA);
+        tabela.getTableHeader().setReorderingAllowed(false);
+    }
+
+    public static void aplicarRenderizadorZebra(JTable tabela) {
+        if (tabela == null) return;
+        tabela.setDefaultRenderer(Object.class, new ZebraTableRenderer());
+    }
+
+    public static void aplicarEstiloScroll(JScrollPane scrollPane) {
+        if (scrollPane == null) return;
+        scrollPane.setBorder(new BordaArredondada(COLOR_NEBLINA, 8));
+        scrollPane.getViewport().setBackground(COLOR_BRANCO);
+        scrollPane.setBackground(COLOR_BRANCO);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+    }
+
+    public static void aplicarEstiloAbas(JTabbedPane abas) {
+        if (abas == null) return;
+        abas.setBackground(COLOR_BRANCO);
+        abas.setForeground(COLOR_TINTA);
+        abas.setOpaque(true);
+        for (int i = 0; i < abas.getTabCount(); i++) {
+            abas.setBackgroundAt(i, i == abas.getSelectedIndex() ? COLOR_VERDE_CADEIRA : COLOR_BRANCO);
+            abas.setForegroundAt(i, i == abas.getSelectedIndex() ? Color.WHITE : COLOR_TINTA);
+        }
+        abas.addChangeListener(e -> {
+            for (int i = 0; i < abas.getTabCount(); i++) {
+                abas.setBackgroundAt(i, i == abas.getSelectedIndex() ? COLOR_VERDE_CADEIRA : COLOR_BRANCO);
+                abas.setForegroundAt(i, i == abas.getSelectedIndex() ? Color.WHITE : COLOR_TINTA);
+            }
+        });
     }
 
     /**

@@ -14,6 +14,7 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -86,6 +87,7 @@ public class AgendaController {
             Barbearia b = AppContext.getInstance().getBarbeariaAtual();
             if (b == null) return;
             List<Agendamento> lista = agendaService.listarPendentesPorBarbearia(b.getId());
+            lista.sort(Comparator.comparing(Agendamento::getDataHora).reversed());
             agendamentosPendentesAtuais = lista;
             DefaultTableModel model = (DefaultTableModel) tblAgendamentos.getModel();
             model.setRowCount(0);
@@ -121,7 +123,8 @@ public class AgendaController {
         int row = tblAgendamentos.getSelectedRow();
         if (row < 0) return;
 
-        int id = (int) tblAgendamentos.getModel().getValueAt(row, 0);
+        int modelRow = tblAgendamentos.convertRowIndexToModel(row);
+        int id = (int) tblAgendamentos.getModel().getValueAt(modelRow, 0);
         try {
             Agendamento a = agendaService.buscarPorId(id);
             JPopupMenu menu = new JPopupMenu();

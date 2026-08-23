@@ -57,6 +57,14 @@ public class TelaCadastroInicial extends javax.swing.JFrame {
         UIUtil.estilizarBotaoPrimario(btnAdicionarBarbeiro);
         UIUtil.estilizarBotaoSecundario(btnEditarBarbeiro);
         UIUtil.estilizarBotaoPerigo(btnRemoverBarbeiro);
+
+        UIUtil.aplicarEstiloTabela(tblServicos);
+        UIUtil.aplicarEstiloTabela(tblBarbeiros);
+        UIUtil.aplicarRenderizadorZebra(tblServicos);
+        UIUtil.aplicarRenderizadorZebra(tblBarbeiros);
+        UIUtil.aplicarEstiloScroll(jScrollPane1);
+        UIUtil.aplicarEstiloScroll(jScrollPane2);
+        UIUtil.aplicarEstiloScroll(jScrollPane3);
     }
 
     /** Redesenha a tabela de serviços a partir da lista em memória. */

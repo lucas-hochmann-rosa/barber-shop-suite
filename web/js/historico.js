@@ -111,6 +111,7 @@ const Historico = {
         const visiveis = this.filtrados.slice(comeco, comeco + this.POR_PAGINA);
 
         corpo.innerHTML = visiveis.map((a) => {
+            const cls = a.classificacao || classificar(a, new Date());
             const classeSelo = {
                 AGENDADO: 'agendado',
                 EM_ATENDIMENTO: 'em-atendimento',
@@ -121,7 +122,7 @@ const Historico = {
             const cancelado = a.status === StatusAgendamento.CANCELADO;
 
             return `
-            <tr class="${cancelado ? 'linha-cancelada' : ''}">
+            <tr class="linha-${cls} ${cancelado ? 'linha-cancelada' : ''}">
                 <td class="mono">${Formato.data(a.dataHora)}</td>
                 <td class="hora">${Formato.hora(a.dataHora)}</td>
                 <td>${a.clienteNome}</td>

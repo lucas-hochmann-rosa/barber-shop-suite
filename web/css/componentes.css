@@ -40,11 +40,15 @@
     text-transform: uppercase;
     letter-spacing: .06em;
     white-space: nowrap;
-    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
 }
 
 .botao:hover {
     text-decoration: none;
+}
+
+.botao:focus-visible {
+    box-shadow: 0 0 0 3px rgba(200, 145, 47, .22);
 }
 
 .botao--primario {
@@ -294,6 +298,12 @@
     color: var(--fumaca);
 }
 
+.selo--atrasado {
+    background: rgba(138, 51, 36, .1);
+    border-color: rgba(138, 51, 36, .5);
+    color: var(--oxblood);
+}
+
 .selo--em-atendimento {
     background: rgba(46, 125, 107, .12);
     border-color: rgba(46, 125, 107, .5);
@@ -319,7 +329,9 @@
     background: var(--branco);
     border: var(--borda);
     border-radius: var(--canto);
-    overflow-x: auto;
+    overflow: auto;
+    scrollbar-color: var(--verde-claro) var(--porcelana);
+    scrollbar-width: thin;
 }
 
 .tabela {
@@ -346,12 +358,62 @@
     vertical-align: middle;
 }
 
+.tabela tbody tr:nth-child(even):not(.linha-ATRASADO):not(.linha-EM_ANDAMENTO):not(.linha-IMINENTE):not(.linha-PROXIMO):not(.linha-CONCLUIDO):not(.linha-CANCELADO) {
+    background: rgba(242, 245, 243, .42);
+}
+
+.tabela tbody tr:nth-child(odd):not(.linha-ATRASADO):not(.linha-EM_ANDAMENTO):not(.linha-IMINENTE):not(.linha-PROXIMO):not(.linha-CONCLUIDO):not(.linha-CANCELADO) {
+    background: var(--branco);
+}
+
+.linha-ATRASADO {
+    background: rgba(138, 51, 36, .105);
+}
+
+.linha-ATRASADO:nth-child(even) {
+    background: rgba(138, 51, 36, .145);
+}
+
+.linha-EM_ANDAMENTO {
+    background: rgba(46, 125, 107, .1);
+}
+
+.linha-EM_ANDAMENTO:nth-child(even) {
+    background: rgba(46, 125, 107, .14);
+}
+
+.linha-IMINENTE {
+    background: rgba(200, 145, 47, .1);
+}
+
+.linha-IMINENTE:nth-child(even) {
+    background: rgba(200, 145, 47, .14);
+}
+
+.linha-PROXIMO {
+    background: rgba(107, 122, 118, .08);
+}
+
+.linha-PROXIMO:nth-child(even) {
+    background: rgba(107, 122, 118, .12);
+}
+
+.linha-CONCLUIDO,
+.linha-CANCELADO {
+    background: rgba(242, 245, 243, .66);
+}
+
+.linha-CONCLUIDO:nth-child(even),
+.linha-CANCELADO:nth-child(even) {
+    background: rgba(220, 227, 224, .62);
+}
+
 .tabela tbody tr:last-child td {
     border-bottom: none;
 }
 
 .tabela tbody tr:hover {
-    background: rgba(242, 245, 243, .7);
+    background: rgba(46, 125, 107, .12);
 }
 
 /* Cabeçalho ordenável (histórico) */
@@ -673,6 +735,8 @@
     width: min(520px, 100%);
     max-height: 90vh;
     overflow-y: auto;
+    scrollbar-color: var(--verde-claro) var(--porcelana);
+    scrollbar-width: thin;
     background: var(--branco);
     border-radius: var(--canto);
     box-shadow: var(--sombra-flutuante);

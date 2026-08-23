@@ -44,6 +44,8 @@ public class RelatorioController {
         this.tblServicosVendidos = tblServicosVendidos;
         this.tblRankingBarbeiros = tblRankingBarbeiros;
         this.relatorioService = relatorioService;
+        UIUtil.aplicarRenderizadorZebra(tblServicosVendidos);
+        UIUtil.aplicarRenderizadorZebra(tblRankingBarbeiros);
     }
 
     /**

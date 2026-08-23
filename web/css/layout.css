@@ -202,6 +202,10 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: var(--e-4);
+    margin: 0;
+    padding: 2px 2px var(--e-3);
+    list-style: none;
+    min-width: 0;
 }
 
 /* Duas colunas: formulário/relatório à esquerda, painel de apoio à direita */

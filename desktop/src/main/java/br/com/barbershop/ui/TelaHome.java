@@ -104,6 +104,23 @@ public class TelaHome extends javax.swing.JFrame {
         UIUtil.aplicarEstiloCartao(pnlGerenciarServicos);
         UIUtil.aplicarEstiloCartao(pnlGerenciarBarbeiros);
         UIUtil.aplicarEstiloCartao(pnlClientes);
+        UIUtil.aplicarEstiloAbas(tabBarbearia);
+
+        javax.swing.JScrollPane[] scrolls = {
+            jScrollPane1, jScrollPane4, jScrollPane5, jScrollPane6, jScrollPane7,
+            jScrollPane8, jScrollPane9, jScrollPane10, jScrollPane11
+        };
+        for (javax.swing.JScrollPane scroll : scrolls) {
+            UIUtil.aplicarEstiloScroll(scroll);
+        }
+
+        javax.swing.JTable[] tabelas = {
+            tblAgendamentos, tblGerenciarServicos, tblGerenciarBarbeiros,
+            tblClientes, tblHistorico, tblServicosVendidos, tblRankingBarbeiros
+        };
+        for (javax.swing.JTable tabela : tabelas) {
+            UIUtil.aplicarEstiloTabela(tabela);
+        }
 
         JButton[] botoesMenu = {btnHome, btnMinhaBarbearia, btnHistorico, btnRelatorios};
         for (JButton btn : botoesMenu) {
@@ -111,11 +128,13 @@ public class TelaHome extends javax.swing.JFrame {
             btn.setForeground(Color.WHITE);
             btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
             btn.setFocusPainted(false);
+            btn.setBorder(UIUtil.criarBordaBotao(new Color(0xDC, 0xE3, 0xE0, 0xAA), 16));
         }
         btnSair.setBackground(UIUtil.COLOR_OXBLOOD);
         btnSair.setForeground(Color.WHITE);
         btnSair.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btnSair.setFocusPainted(false);
+        btnSair.setBorder(UIUtil.criarBordaBotao(new Color(0xDC, 0xE3, 0xE0, 0xAA), 16));
 
         UIUtil.estilizarBotaoPrimario(btnAgendar);
         UIUtil.estilizarBotaoPrimario(btnSalvarB);

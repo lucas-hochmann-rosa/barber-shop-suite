@@ -8,6 +8,7 @@ import br.com.barbershop.ui.support.StatusRowRenderer;
 import br.com.barbershop.util.DateTimeUtil;
 import java.awt.Component;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
@@ -54,6 +55,7 @@ public class HistoricoController {
             Barbearia b = AppContext.getInstance().getBarbeariaAtual();
             if (b == null) return;
             List<Agendamento> lista = agendaService.listarPorBarbearia(b.getId());
+            lista.sort(Comparator.comparing(Agendamento::getDataHora).reversed());
             agendamentosHistoricoAtuais = lista;
             DefaultTableModel model = (DefaultTableModel) tblHistorico.getModel();
             model.setRowCount(0);

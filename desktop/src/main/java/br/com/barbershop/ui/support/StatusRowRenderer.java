@@ -28,6 +28,7 @@ public class StatusRowRenderer extends DefaultTableCellRenderer {
     private static final Color COR_DISTANTE = new Color(255, 255, 255);      // Branco limpo (distante)
     private static final Color COR_CONCLUIDO = new Color(240, 243, 242);     // Porcelana (concluído)
     private static final Color COR_CANCELADO = new Color(245, 245, 245);     // Cinza neutro (cancelado)
+    private static final Color COR_ZEBRA = new Color(0xF8, 0xFA, 0xF9);
 
     private final Supplier<List<Agendamento>> origemSupplier;
 
@@ -54,7 +55,7 @@ public class StatusRowRenderer extends DefaultTableCellRenderer {
 
         Agendamento a = origem.get(modelRow);
         ClassificacaoAgenda classificacao = ClassificadorAgenda.classificar(a, LocalDateTime.now());
-        return corDaClassificacao(classificacao);
+        return mesclar(corDaClassificacao(classificacao), viewRow % 2 == 0 ? Color.WHITE : COR_ZEBRA, 0.82);
     }
 
     private Color corDaClassificacao(ClassificacaoAgenda classificacao) {
@@ -67,5 +68,13 @@ public class StatusRowRenderer extends DefaultTableCellRenderer {
             case CONCLUIDO -> COR_CONCLUIDO;
             case CANCELADO -> COR_CANCELADO;
         };
+    }
+
+    private Color mesclar(Color principal, Color base, double pesoPrincipal) {
+        double pesoBase = 1.0 - pesoPrincipal;
+        int r = (int) Math.round(principal.getRed() * pesoPrincipal + base.getRed() * pesoBase);
+        int g = (int) Math.round(principal.getGreen() * pesoPrincipal + base.getGreen() * pesoBase);
+        int b = (int) Math.round(principal.getBlue() * pesoPrincipal + base.getBlue() * pesoBase);
+        return new Color(r, g, b);
     }
 }

@@ -134,7 +134,7 @@ const Agenda = {
 
         const pendentes = this.agendamentos.filter(
             (a) => a.status === StatusAgendamento.AGENDADO || a.status === StatusAgendamento.EM_ATENDIMENTO
-        );
+        ).sort((a, b) => b.dataHora - a.dataHora);
 
         if (!pendentes.length) {
             corpo.innerHTML = '';
@@ -147,9 +147,13 @@ const Agenda = {
             const cls = a.classificacao || classificar(a, agora);
             const podeIniciar = a.status === StatusAgendamento.AGENDADO;
             const podeConcluir = a.status === StatusAgendamento.EM_ATENDIMENTO;
+            const classeSelo = cls === ClassificacaoAgenda.ATRASADO
+                ? 'atrasado'
+                : (a.status === StatusAgendamento.EM_ATENDIMENTO ? 'em-atendimento' : 'agendado');
+            const rotuloSelo = cls === ClassificacaoAgenda.ATRASADO ? RotuloClassificacao[cls] : RotuloStatus[a.status];
 
             return `
-            <tr>
+            <tr class="linha-${cls}">
                 <td class="celula-faixa">
                     <span class="faixa-classificacao cls-${cls}" title="${RotuloClassificacao[cls]}"></span>
                     <span class="apenas-leitor-tela">${RotuloClassificacao[cls]}</span>
@@ -158,7 +162,7 @@ const Agenda = {
                 <td>${a.clienteNome}<br><span class="texto-pequeno texto-secundario">${a.contato}</span></td>
                 <td>${a.servicoNome}</td>
                 <td>${a.barbeiroNome}</td>
-                <td><span class="selo selo--${a.status === StatusAgendamento.EM_ATENDIMENTO ? 'em-atendimento' : 'agendado'}">${RotuloStatus[a.status]}</span></td>
+                <td><span class="selo selo--${classeSelo}">${rotuloSelo}</span></td>
                 <td>
                     <div class="grupo-acoes">
                         <button type="button" class="botao-acao" data-acao="iniciar" data-id="${a.id}"
