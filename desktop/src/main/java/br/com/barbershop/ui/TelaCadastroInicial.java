@@ -33,9 +33,12 @@ public class TelaCadastroInicial extends javax.swing.JFrame {
     public TelaCadastroInicial() {
         initComponents();
         aplicarEstilos();
+        configurarRolagemResponsiva();
         UIUtil.aplicarIcone(this);
         pack();
         setLocationRelativeTo(null);
+        setMinimumSize(new java.awt.Dimension(900, 650));
+        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
     }
 
     private void aplicarEstilos() {
@@ -73,6 +76,21 @@ public class TelaCadastroInicial extends javax.swing.JFrame {
         UIUtil.aplicarEstiloCampo(txtCultura);
         UIUtil.aplicarEstiloCampo(txtLogin);
         UIUtil.aplicarEstiloCampo(txtSenha);
+    }
+
+    /**
+     * Mantém o formulário completo acessível em notebooks e permite que a
+     * janela acompanhe redimensionamentos sem cortar a faixa de ações.
+     */
+    private void configurarRolagemResponsiva() {
+        java.awt.Container formulario = getContentPane();
+        javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(formulario);
+        scroll.setBorder(null);
+        scroll.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.getViewport().setBackground(UIUtil.COLOR_PORCELANA);
+        scroll.getVerticalScrollBar().setUnitIncrement(16);
+        setContentPane(scroll);
+        setResizable(true);
     }
 
     /** Redesenha a tabela de serviços a partir da lista em memória. */

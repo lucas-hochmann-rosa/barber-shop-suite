@@ -23,6 +23,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
 
@@ -44,6 +45,7 @@ public class UIUtil {
     public static final Color COLOR_FUMACA = new Color(0x6B, 0x7A, 0x76);      // #6B7A76 - Texto secundário
     public static final Color COLOR_NEBLINA = new Color(0xDC, 0xE3, 0xE0);     // #DCE3E0 - Bordas e divisores
 
+    private static final int RAIO_CANTO = 6;
     private static final int[] TAMANHOS_ICONE = {16, 24, 32, 48, 64, 128, 256};
 
     private static List<Image> iconesApp;
@@ -63,7 +65,7 @@ public class UIUtil {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(cor);
-            g2.drawRoundRect(x, y, width - 1, height - 1, raio, raio);
+            g2.drawRoundRect(x, y, width - 1, height - 1, raio * 2, raio * 2);
             g2.dispose();
         }
     }
@@ -84,9 +86,9 @@ public class UIUtil {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(fundo);
-            g2.fillRoundRect(x, y, width - 1, height - 1, raio, raio);
+            g2.fillRoundRect(x, y, width - 1, height - 1, raio * 2, raio * 2);
             g2.setColor(borda);
-            g2.drawRoundRect(x, y, width - 1, height - 1, raio, raio);
+            g2.drawRoundRect(x, y, width - 1, height - 1, raio * 2, raio * 2);
             g2.dispose();
         }
     }
@@ -105,29 +107,29 @@ public class UIUtil {
 
         UIManager.put("Component.accentColor", COLOR_VERDE_CADEIRA);
         UIManager.put("Component.focusColor", new Color(0x2E, 0x7D, 0x6B, 0x60));
-        UIManager.put("Component.arc", 6);
-        UIManager.put("Button.arc", 12);
-        UIManager.put("TextComponent.arc", 6);
-        UIManager.put("ProgressBar.arc", 6);
-        UIManager.put("ScrollBar.thumbArc", 8);
-        UIManager.put("ScrollBar.trackArc", 8);
+        UIManager.put("Component.arc", RAIO_CANTO);
+        UIManager.put("Button.arc", RAIO_CANTO);
+        UIManager.put("TextComponent.arc", RAIO_CANTO);
+        UIManager.put("ProgressBar.arc", RAIO_CANTO);
+        UIManager.put("ScrollBar.thumbArc", RAIO_CANTO);
+        UIManager.put("ScrollBar.trackArc", RAIO_CANTO);
         UIManager.put("ScrollBar.thumb", COLOR_NEBLINA);
         UIManager.put("ScrollBar.hoverThumbColor", COLOR_FUMACA);
         UIManager.put("ScrollBar.pressedThumbColor", COLOR_VERDE_CLARO);
 
-        UIManager.put("TableHeader.background", COLOR_VERDE_CADEIRA);
-        UIManager.put("TableHeader.foreground", Color.WHITE);
-        UIManager.put("TableHeader.font", new Font("Segoe UI", Font.BOLD, 12));
-        UIManager.put("TableHeader.separatorColor", COLOR_VERDE_CLARO);
+        UIManager.put("TableHeader.background", COLOR_PORCELANA);
+        UIManager.put("TableHeader.foreground", COLOR_FUMACA);
+        UIManager.put("TableHeader.font", new Font("Segoe UI", Font.BOLD, 13));
+        UIManager.put("TableHeader.separatorColor", COLOR_NEBLINA);
 
         UIManager.put("Table.background", COLOR_BRANCO);
         UIManager.put("Table.foreground", COLOR_TINTA);
         UIManager.put("Table.gridColor", COLOR_PORCELANA);
         UIManager.put("Table.selectionBackground", new Color(0x2E, 0x7D, 0x6B, 0x33));
         UIManager.put("Table.selectionForeground", COLOR_TINTA);
-        UIManager.put("Table.rowHeight", 30);
+        UIManager.put("Table.rowHeight", 34);
 
-        UIManager.put("TabbedPane.selectedBackground", COLOR_VERDE_CADEIRA);
+        UIManager.put("TabbedPane.selectedBackground", COLOR_VERDE_CLARO);
         UIManager.put("TabbedPane.selectedForeground", Color.WHITE);
         UIManager.put("TabbedPane.background", COLOR_BRANCO);
         UIManager.put("TabbedPane.foreground", COLOR_TINTA);
@@ -149,7 +151,7 @@ public class UIUtil {
         btn.setFocusPainted(false);
         btn.setMargin(new java.awt.Insets(8, 18, 8, 18));
         btn.putClientProperty(FlatClientProperties.STYLE,
-                "arc: 12; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
+                "arc: 6; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
                         + "background: #14483F; foreground: #FFFFFF; borderColor: #14483F;"
                         + "hoverBackground: #2E7D6B; pressedBackground: #0F3A33;"
                         + "focusedBorderColor: #C8912F;");
@@ -166,7 +168,7 @@ public class UIUtil {
         btn.setFocusPainted(false);
         btn.setMargin(new java.awt.Insets(8, 17, 8, 17));
         btn.putClientProperty(FlatClientProperties.STYLE,
-                "arc: 12; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
+                "arc: 6; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
                         + "background: #FFFFFF; foreground: #14483F; borderColor: #DCE3E0;"
                         + "hoverBackground: #F2F5F3; hoverBorderColor: #2E7D6B;"
                         + "pressedBackground: #DCE3E0; focusedBorderColor: #C8912F;");
@@ -177,29 +179,39 @@ public class UIUtil {
      */
     public static void estilizarBotaoPerigo(JButton btn) {
         if (btn == null) return;
-        btn.setBackground(COLOR_OXBLOOD);
-        btn.setForeground(Color.WHITE);
+        btn.setBackground(COLOR_BRANCO);
+        btn.setForeground(COLOR_OXBLOOD);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btn.setFocusPainted(false);
         btn.setMargin(new java.awt.Insets(8, 18, 8, 18));
         btn.putClientProperty(FlatClientProperties.STYLE,
-                "arc: 12; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
-                        + "background: #8A3324; foreground: #FFFFFF; borderColor: #8A3324;"
-                        + "hoverBackground: #A94432; pressedBackground: #70281D;"
+                "arc: 6; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
+                        + "background: #FFFFFF; foreground: #8A3324; borderColor: #DCE3E0;"
+                        + "hoverBackground: #F9E8E4; hoverBorderColor: #8A3324;"
+                        + "pressedBackground: #F2D4CE;"
                         + "focusedBorderColor: #C8912F;");
     }
 
     public static void estilizarBotaoMenu(JButton btn, boolean perigo) {
         if (btn == null) return;
         if (perigo) {
-            estilizarBotaoPerigo(btn);
+            btn.setBackground(COLOR_VERDE_CADEIRA);
+            btn.setForeground(new Color(0xD6, 0xE0, 0xDD));
+            btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            btn.setFocusPainted(false);
+            btn.setMargin(new java.awt.Insets(8, 18, 8, 18));
+            btn.putClientProperty(FlatClientProperties.STYLE,
+                    "arc: 6; borderWidth: 0; focusWidth: 1; innerFocusWidth: 0;"
+                            + "background: #14483F; foreground: #D6E0DD; borderColor: #14483F;"
+                            + "hoverBackground: #255E53; pressedBackground: #0F3A33;"
+                            + "focusedBorderColor: #C8912F;");
             return;
         }
         estilizarBotaoPrimario(btn);
         btn.putClientProperty(FlatClientProperties.STYLE,
-                "arc: 10; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
-                        + "background: #2E7D6B; foreground: #FFFFFF; borderColor: #86B0A6;"
-                        + "hoverBackground: #3B927F; pressedBackground: #14483F;"
+                "arc: 6; borderWidth: 0; focusWidth: 1; innerFocusWidth: 0;"
+                        + "background: #14483F; foreground: #D6E0DD; borderColor: #14483F;"
+                        + "hoverBackground: #255E53; pressedBackground: #0F3A33;"
                         + "focusedBorderColor: #C8912F;");
     }
 
@@ -207,15 +219,15 @@ public class UIUtil {
         if (btn == null) return;
         estilizarBotaoPrimario(btn);
         btn.putClientProperty(FlatClientProperties.STYLE,
-                "arc: 10; borderWidth: 2; focusWidth: 1; innerFocusWidth: 0;"
-                        + "background: #2E7D6B; foreground: #FFFFFF; borderColor: #C8912F;"
+                "arc: 6; borderWidth: 0; focusWidth: 1; innerFocusWidth: 0;"
+                        + "background: #2E7D6B; foreground: #FFFFFF; borderColor: #2E7D6B;"
                         + "hoverBackground: #3B927F; pressedBackground: #14483F;"
                         + "focusedBorderColor: #C8912F;");
     }
 
     public static void aplicarEstiloTabela(JTable tabela) {
         if (tabela == null) return;
-        tabela.setRowHeight(30);
+        tabela.setRowHeight(34);
         tabela.setShowHorizontalLines(true);
         tabela.setShowVerticalLines(false);
         tabela.setGridColor(COLOR_PORCELANA);
@@ -223,6 +235,10 @@ public class UIUtil {
         tabela.setSelectionBackground(new Color(0x2E, 0x7D, 0x6B, 0x33));
         tabela.setSelectionForeground(COLOR_TINTA);
         tabela.getTableHeader().setReorderingAllowed(false);
+        tabela.getTableHeader().setBackground(COLOR_PORCELANA);
+        tabela.getTableHeader().setForeground(COLOR_FUMACA);
+        tabela.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+        tabela.getTableHeader().setPreferredSize(new Dimension(0, 38));
     }
 
     public static void aplicarRenderizadorZebra(JTable tabela) {
@@ -233,7 +249,7 @@ public class UIUtil {
     public static void aplicarEstiloScroll(JScrollPane scrollPane) {
         if (scrollPane == null) return;
         scrollPane.setOpaque(false);
-        scrollPane.setBorder(new BordaSuperficie(COLOR_BRANCO, COLOR_NEBLINA, 12));
+        scrollPane.setBorder(new BordaSuperficie(COLOR_BRANCO, COLOR_NEBLINA, RAIO_CANTO));
         scrollPane.getViewport().setBackground(COLOR_BRANCO);
         scrollPane.setBackground(COLOR_BRANCO);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -246,12 +262,12 @@ public class UIUtil {
         abas.setForeground(COLOR_TINTA);
         abas.setOpaque(true);
         for (int i = 0; i < abas.getTabCount(); i++) {
-            abas.setBackgroundAt(i, i == abas.getSelectedIndex() ? COLOR_VERDE_CADEIRA : COLOR_BRANCO);
+            abas.setBackgroundAt(i, i == abas.getSelectedIndex() ? COLOR_VERDE_CLARO : COLOR_BRANCO);
             abas.setForegroundAt(i, i == abas.getSelectedIndex() ? Color.WHITE : COLOR_TINTA);
         }
         abas.addChangeListener(e -> {
             for (int i = 0; i < abas.getTabCount(); i++) {
-                abas.setBackgroundAt(i, i == abas.getSelectedIndex() ? COLOR_VERDE_CADEIRA : COLOR_BRANCO);
+                abas.setBackgroundAt(i, i == abas.getSelectedIndex() ? COLOR_VERDE_CLARO : COLOR_BRANCO);
                 abas.setForegroundAt(i, i == abas.getSelectedIndex() ? Color.WHITE : COLOR_TINTA);
             }
         });
@@ -266,11 +282,21 @@ public class UIUtil {
         painel.setBackground(COLOR_BRANCO);
         painel.setOpaque(false);
         Border bordaOriginal = painel.getBorder();
-        Border bordaCartao = new BordaSuperficie(COLOR_BRANCO, COLOR_NEBLINA, 12);
-        Border respiro = BorderFactory.createEmptyBorder(12, 12, 12, 12);
-        Border conteudo = bordaOriginal != null
-                ? BorderFactory.createCompoundBorder(bordaOriginal, respiro)
-                : respiro;
+        Border bordaCartao = new BordaSuperficie(COLOR_BRANCO, COLOR_NEBLINA, RAIO_CANTO);
+        Border respiro = BorderFactory.createEmptyBorder(16, 16, 16, 16);
+        Border conteudo = respiro;
+        if (bordaOriginal instanceof TitledBorder tituloOriginal) {
+            TitledBorder titulo = BorderFactory.createTitledBorder(
+                    BorderFactory.createEmptyBorder(6, 8, 0, 8),
+                    tituloOriginal.getTitle(),
+                    TitledBorder.LEADING,
+                    TitledBorder.TOP,
+                    new Font("Segoe UI", Font.BOLD, 13),
+                    COLOR_VERDE_CADEIRA);
+            conteudo = BorderFactory.createCompoundBorder(
+                    titulo,
+                    BorderFactory.createEmptyBorder(4, 14, 14, 14));
+        }
         painel.setBorder(BorderFactory.createCompoundBorder(
                 bordaCartao,
                 conteudo));
@@ -283,6 +309,17 @@ public class UIUtil {
         painel.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
     }
 
+    /**
+     * Deixa janelas auxiliares com a superfície branca e o respiro usado
+     * pelos diálogos da versão web.
+     */
+    public static void aplicarEstiloDialogo(JComponent painel) {
+        if (painel == null) return;
+        painel.setBackground(COLOR_BRANCO);
+        painel.setOpaque(true);
+        painel.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
+    }
+
     public static void aplicarEstiloCampo(JTextComponent campo) {
         if (campo == null) return;
         campo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -290,12 +327,12 @@ public class UIUtil {
             campo.setBackground(COLOR_BRANCO);
             campo.setForeground(COLOR_TINTA);
             campo.setBorder(BorderFactory.createCompoundBorder(
-                    new BordaArredondada(COLOR_NEBLINA, 8),
+                    new BordaArredondada(COLOR_NEBLINA, RAIO_CANTO),
                     BorderFactory.createEmptyBorder(8, 10, 8, 10)));
             return;
         }
         campo.putClientProperty(FlatClientProperties.STYLE,
-                "arc: 8; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
+                "arc: 6; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
                         + "background: #FFFFFF; foreground: #14201E; borderColor: #DCE3E0;"
                         + "focusedBorderColor: #2E7D6B;");
     }
@@ -304,7 +341,7 @@ public class UIUtil {
         if (combo == null) return;
         combo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         combo.putClientProperty(FlatClientProperties.STYLE,
-                "arc: 8; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
+                "arc: 6; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
                         + "background: #FFFFFF; foreground: #14201E; borderColor: #DCE3E0;"
                         + "focusedBorderColor: #2E7D6B;");
     }
@@ -312,16 +349,16 @@ public class UIUtil {
     public static void aplicarEstiloSpinner(JSpinner spinner) {
         if (spinner == null) return;
         spinner.putClientProperty(FlatClientProperties.STYLE,
-                "arc: 8; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
+                "arc: 6; borderWidth: 1; focusWidth: 2; innerFocusWidth: 0;"
                         + "background: #FFFFFF; borderColor: #DCE3E0; focusedBorderColor: #2E7D6B;");
     }
 
-    public static void aplicarEstiloPreview(JLabel label, int raio) {
+    public static void aplicarEstiloPreview(JLabel label) {
         if (label == null) return;
         label.setOpaque(false);
         label.setBackground(COLOR_BRANCO);
         label.setForeground(COLOR_FUMACA);
-        label.setBorder(new BordaArredondada(COLOR_NEBLINA, raio));
+        label.setBorder(new BordaArredondada(COLOR_NEBLINA, RAIO_CANTO));
     }
 
     public static FlatSVGIcon carregarSvg(String caminho, int width, int height) {

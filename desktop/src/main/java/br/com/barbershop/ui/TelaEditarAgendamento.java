@@ -57,7 +57,8 @@ public class TelaEditarAgendamento extends JFrame {
         this.agendamentoId = agendamentoId;
         setTitle("Barbershop - Editar Agendamento");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(600, 450);
+        setMinimumSize(new Dimension(680, 540));
+        setSize(680, 540);
         setLocationRelativeTo(null);
         UIUtil.aplicarIcone(this);
 
@@ -69,10 +70,10 @@ public class TelaEditarAgendamento extends JFrame {
     /** Monta manualmente todos os componentes e o layout da tela (GridBagLayout). */
     private void initUI() {
         JPanel root = new JPanel(new BorderLayout(10, 10));
-        UIUtil.aplicarEstiloPainelRaiz(root);
+        UIUtil.aplicarEstiloDialogo(root);
 
         JPanel form = new JPanel(new GridBagLayout());
-        form.setOpaque(false);
+        UIUtil.aplicarEstiloCartao(form);
         GridBagConstraints gc = new GridBagConstraints();
         gc.insets = new Insets(6, 6, 6, 6);
         gc.fill = GridBagConstraints.HORIZONTAL;
@@ -154,7 +155,7 @@ public class TelaEditarAgendamento extends JFrame {
         UIUtil.aplicarEstiloCombo(cbServico);
         UIUtil.aplicarEstiloCombo(cbBarbeiro);
         UIUtil.aplicarEstiloCombo(cbOrigem);
-        UIUtil.aplicarEstiloPreview(lblFotoBarbeiro, 16);
+        UIUtil.aplicarEstiloPreview(lblFotoBarbeiro);
     }
 
     /** Helper de layout: adiciona uma linha "rótulo + campo" ao formulário em GridBagLayout. */
