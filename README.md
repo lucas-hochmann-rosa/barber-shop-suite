@@ -45,7 +45,7 @@ java -jar desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar
 
 # 5. Executar a API REST Spring Boot (Back-end Web)
 java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
-# ou: mvn spring-boot:run -pl api -am (porta 8080)
+# porta 8080
 
 # 6. Opcional: carregar a base de demonstração compartilhada
 java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
@@ -248,8 +248,9 @@ Requer **JDK 17+** e **MySQL 8**.
 #### Como executar:
 
 ```bash
-# Execução direta via plugin do Spring Boot
-mvn spring-boot:run -pl api
+# Execução direta via plugin do Spring Boot em um clone limpo
+mvn install -pl core -am -DskipTests
+mvn -f api/pom.xml spring-boot:run
 
 # Ou via pacote JAR
 mvn clean package -pl api
@@ -309,8 +310,7 @@ Formas de carregar:
 mvn clean package -pl desktop
 java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
 
-# Pela API em ambiente de desenvolvimento
-mvn spring-boot:run -pl api
+# Pela API em ambiente de desenvolvimento, depois de iniciá-la
 curl -X POST http://localhost:8080/api/dev/seed
 ```
 

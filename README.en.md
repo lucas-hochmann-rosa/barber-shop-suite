@@ -45,7 +45,7 @@ java -jar desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar
 
 # 5. Run the Spring Boot REST API (Web Back-end)
 java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
-# or: mvn spring-boot:run -pl api -am (port 8080)
+# port 8080
 
 # 6. Optional: load the shared demo database
 java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
@@ -145,7 +145,8 @@ Apache NetBeans can run the `desktop` module through its `nbactions.xml`.
 ### 3. `api`
 
 ```bash
-mvn spring-boot:run -pl api
+mvn install -pl core -am -DskipTests
+mvn -f api/pom.xml spring-boot:run
 # or
 mvn clean package -pl api
 java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
@@ -187,8 +188,7 @@ Seeding is manual and idempotent: `semearSeNecessario()` only inserts data when 
 mvn clean package -pl desktop
 java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
 
-# Development API seed
-mvn spring-boot:run -pl api
+# Development API seed, after starting the API
 curl -X POST http://localhost:8080/api/dev/seed
 ```
 
