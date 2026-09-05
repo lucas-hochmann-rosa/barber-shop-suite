@@ -6,14 +6,24 @@ Versão web do Barbershop, feita com **HTML, CSS e JavaScript puros**: sem frame
 
 ## Como abrir
 
-Os arquivos são estáticos, mas os SVGs compartilhados ficam fora da pasta `web`, em `shared-assets/img`. Por isso, prefira servir a raiz do repositório por HTTP ou abrir pela API Spring REST:
+Os arquivos são estáticos, mas os SVGs compartilhados ficam fora da pasta `web`, em `shared-assets/img`. A opção recomendada é iniciar a API pela raiz do repositório e deixar o Spring servir o próprio front-end:
 
 ```bash
-cd ..
+docker compose up -d
+mvn clean package -pl api -am
+java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
+```
+
+Acesse <http://localhost:8080/index.html>. Nesse modo, páginas, assets e endpoints REST usam a mesma origem.
+
+Como alternativa, mantenha a API ativa e sirva a raiz do repositório em outro terminal:
+
+```bash
+# execute na raiz de barber-shop-suite
 python -m http.server 5500
 ```
 
-E acesse <http://localhost:5500/web/index.html>.
+Depois, acesse <http://localhost:5500/web/index.html>. O cliente `js/api.js` direciona as requisições para `http://localhost:8080/api` quando a página está fora da porta `8080`.
 
 **Acesso de demonstração:** usuário `barbershop`, senha `barbershop`, quando a base demo tiver sido carregada em banco vazio.
 
@@ -26,7 +36,7 @@ web/
 ├── index.html                 Entrar (RF02)
 ├── agenda.html                Tela principal: régua do dia, resumo, serviços e pendentes (RF08, RF11)
 ├── agendamento.html           Novo agendamento / edição (RF05, RF06, RF10)
-├── barbearia.html             Dados, serviços e barbeiros, em abas (RF03, RF04)
+├── barbearia.html             Primeiro acesso e gestão da barbearia, serviços e barbeiros (RF01, RF03, RF04)
 ├── historico.html             Listagem completa com filtros (RF09)
 ├── relatorios.html            Faturamento, mais vendidos e ranking (RF09)
 ├── verificacao-classificacao.html Confere a regra RF11 contra os casos do teste JUnit
@@ -48,6 +58,16 @@ web/
 ```
 
 Os SVGs de marca, login, serviços e avatares ficam em `../shared-assets/img` e são referenciados no HTML/JS por `/shared-assets/img/...`.
+
+---
+
+## Primeiro acesso
+
+Quando `Api.obterSessao()` informa que ainda não existe barbearia cadastrada,
+`barbearia.html` apresenta o formulário de configuração inicial. O envio chama
+`POST /api/barbearia/setup` por meio de `Api.setupInicial`, criando a barbearia
+e o usuário administrador. Após a configuração, a página volta a exibir as
+abas operacionais de dados, serviços e barbeiros.
 
 ---
 
@@ -116,6 +136,7 @@ O vocabulário vem da barbearia física: azulejo, couro, latão, cadeira. As sup
 
 | Requisito | Onde |
 | --- | --- |
+| RF01 - cadastro inicial | `barbearia.html` e `POST /api/barbearia/setup` |
 | RF02 - autenticação | `index.html` e `/api/auth/login` |
 | RF03 - serviços | `barbearia.html` e `/api/servicos` |
 | RF04 - barbeiros | `barbearia.html` e `/api/barbeiros` |

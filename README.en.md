@@ -51,10 +51,12 @@ java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
 java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
 # or, with the API running: curl -X POST http://localhost:8080/api/dev/seed
 
-# 7. Run the static Web Front-end from the repository root
+# 7. Alternative: serve the static Web Front-end from the repository root
 python -m http.server 5500
 # access http://localhost:5500/web/index.html (demo login: barbershop / barbershop)
 ```
+
+With the API started from the repository root, the simplest way to use the web version is to open <http://localhost:8080/index.html>.
 
 ---
 
@@ -63,9 +65,53 @@ python -m http.server 5500
 **Barbershop** is a complete barbershop management system (appointments, staff, services, history, and revenue), built on a modular architecture:
 
 - **Shared Core (`core`)**: Centralizes domain entities, JDBC persistence, idempotent migrations, and core business rules (such as RF11 visual classification and RF10 real time-overlap conflict validation), decoupled from any visual UI.
-- **Desktop Application (`desktop`)**: Built with Java Swing (FlatLaf Look & Feel) featuring automatic bootstrap, services/barbers CRUD, real-time schedule management, reports dashboard, and an operational smoke test (`VerificacaoSistema`).
+- **Desktop Application (`desktop`)**: Responsive Java Swing application (FlatLaf Look & Feel) with a visual language aligned to the web interface, automatic bootstrap, services/barbers CRUD, real-time schedule management, reports dashboard, and an operational smoke test (`VerificacaoSistema`).
 - **Web Version (`web`)**: Modern static front-end in HTML5, CSS3, and JavaScript, featuring an **interactive daily schedule timeline** and real REST client integration (`web/js/api.js`).
 - **Web REST Back-end (`api`)**: Java Web application with Spring Boot 3.2.5 REST, exposing JSON endpoints for authentication, barbershop management, catalog, scheduling, history, and analytics.
+
+---
+
+## 🧠 Features
+
+- Automatic bootstrap: opens the initial setup when the database has no barbershop and login when configuration already exists.
+- Idempotent schema initialization and migrations that preserve appointment history.
+- Complete initial setup for barbershop data, services, barbers, and administrator credentials.
+- Authentication with salted PBKDF2 password hashes and shared session context.
+- Daily schedule with timeline, service shortcuts, pending appointments, and status actions.
+- Services and barbers CRUD, including optional images stored as Base64.
+- Client directory populated automatically from appointments.
+- Configurable service duration and business hours.
+- Real interval-overlap conflict validation (RF10).
+- Visual appointment classification by status and time proximity (RF11).
+- History with filters and reports for revenue, services, and barber rankings.
+- Optional cancellation reason and WhatsApp shortcut from the desktop appointment view.
+- Shared demo database used by desktop, web, and API.
+- Brand, service, and avatar SVGs centralized in `shared-assets/img`.
+- Rotating file logs under `~/.barbershop/logs/` and HikariCP connection pooling.
+
+---
+
+## 🧭 Table of Contents
+
+- [Architecture](#-architecture)
+- [Running Each Module](#-running-each-module)
+- [Shared Core and RF11 Parity](#-shared-core-and-rf11-parity)
+- [Shared Demo Data](#-shared-demo-data)
+- [Shared Images](#-shared-images)
+- [Tech Stack](#-tech-stack)
+- [Project Construction Rules](#-project-construction-rules)
+- [Requirements](#-requirements)
+- [Installation and Database](#-installation-and-database)
+- [Environment Variables](#-environment-variables)
+- [Desktop Deployment](#-desktop-deployment-windows--linux)
+- [Main Screens](#-main-screens)
+- [Implemented Business Rules](#-implemented-business-rules)
+- [Requirements Compliance](#-requirements-compliance)
+- [Automated Testing](#-automated-testing)
+- [System Verification](#-system-verification-smoke-test)
+- [Screenshots](#-screenshots)
+- [Author](#-author)
+- [License](#-license)
 
 ---
 
@@ -97,6 +143,7 @@ barber-shop-suite/
 │
 ├── desktop/                            # [MODULE 2] Desktop Java Swing interface (FlatLaf)
 │   ├── pom.xml
+│   ├── nbactions.xml                   # Run and debug actions for Apache NetBeans
 │   └── src/main/java/br/com/barbershop/
 │       ├── app/                        # Main entry point, ServiceFactory, SystemVerification, and SeedDemoData
 │       └── ui/                         # Swing views and controllers
@@ -109,6 +156,7 @@ barber-shop-suite/
 │
 └── api/                                # [MODULE 4] Spring Boot 3.2.5 REST API
     ├── pom.xml
+    ├── nbactions.xml                   # Spring Boot run, debug, and profile actions for NetBeans
     └── src/
         ├── main/java/br/com/barbershop/api/
         │   ├── Application.java
@@ -136,7 +184,7 @@ Requires JDK 17+ and MySQL 8:
 
 ```bash
 docker compose up -d
-mvn clean package -pl desktop
+mvn clean package -pl desktop -am
 java -jar desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar
 ```
 
@@ -148,7 +196,7 @@ Apache NetBeans can run the `desktop` module through its `nbactions.xml`.
 mvn install -pl core -am -DskipTests
 mvn -f api/pom.xml spring-boot:run
 # or
-mvn clean package -pl api
+mvn clean package -pl api -am
 java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
 ```
 
@@ -156,11 +204,7 @@ The API is available at `http://localhost:8080/api/` and also serves the `web/` 
 
 ### 4. `web`
 
-```bash
-python -m http.server 5500
-```
-
-Access <http://localhost:5500/web/index.html>. The static front-end still reads and writes real data through `http://localhost:8080/api`.
+The recommended option is to start the API from the repository root and open <http://localhost:8080/index.html>. Alternatively, run `python -m http.server 5500` from the repository root and access <http://localhost:5500/web/index.html>; the client then reads and writes data through `http://localhost:8080/api`.
 
 Demo credentials after loading the demo database:
 
@@ -185,7 +229,7 @@ Seeding is manual and idempotent: `semearSeNecessario()` only inserts data when 
 
 ```bash
 # Desktop command-line seed
-mvn clean package -pl desktop
+mvn clean package -pl desktop -am
 java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
 
 # Development API seed, after starting the API
@@ -216,6 +260,137 @@ This keeps the visual identity aligned across web, API, and desktop, avoids asse
 
 ---
 
+## 📐 Project Construction Rules
+
+- New technical logic uses English identifiers for classes, methods, variables, routes, JSON contracts, tables, and columns. Existing Portuguese domain names remain when they are already part of the project contract.
+- Code comments explain non-obvious decisions and constraints, not self-evident operations.
+- User-facing text in Swing and web interfaces remains in Portuguese.
+- No production credential is committed. `config.properties` contains local defaults only and every database setting can be overridden through environment variables.
+
+---
+
+## ⚙️ Requirements
+
+- JDK 17 or newer available on `PATH`
+- MySQL 8, locally installed or started through Docker Compose
+- A MySQL user allowed to create and alter tables in the `barbershop` schema
+- Maven 3.8 or newer when running outside Apache NetBeans
+- A current web browser such as Chrome, Firefox, Edge, or Safari
+
+---
+
+## 🔧 Installation and Database
+
+```bash
+git clone https://github.com/lucas-hochmann-rosa/barber-shop-suite.git
+cd barber-shop-suite
+```
+
+Recommended local database setup:
+
+```bash
+docker compose up -d
+```
+
+This starts MySQL 8 with the local defaults expected by the project. With a native MySQL installation, create the database first:
+
+```sql
+CREATE DATABASE barbershop;
+```
+
+The applications create the tables and run idempotent migrations on startup through `core/src/main/resources/db/schema.sql`.
+
+---
+
+## 🔐 Environment Variables
+
+Default connection settings are stored in `core/src/main/resources/config.properties`:
+
+```properties
+db.url=jdbc:mysql://localhost:3306/barbershop?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo
+db.user=root
+db.password=
+db.driver=com.mysql.cj.jdbc.Driver
+```
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `DB_URL` | JDBC connection URL | `jdbc:mysql://localhost:3306/barbershop...` |
+| `DB_USER` | MySQL user | `root` |
+| `DB_PASSWORD` | MySQL password | *(empty)* |
+| `DB_DRIVER` | JDBC driver class | `com.mysql.cj.jdbc.Driver` |
+
+---
+
+## 📦 Desktop Deployment (Windows / Linux)
+
+The desktop build produces a single executable shaded JAR containing its runtime dependencies:
+
+```bash
+mvn clean package -pl desktop -am
+```
+
+Generated file: `desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar`.
+
+On Windows:
+
+```powershell
+java -jar desktop\target\barber-shop-desktop-1.0-SNAPSHOT.jar
+```
+
+On Linux:
+
+```bash
+java -jar desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar
+```
+
+---
+
+## 🖥️ Main Screens
+
+| Desktop Screen | Web Equivalent | REST Endpoint | Purpose |
+| --- | --- | --- | --- |
+| `TelaCadastroInicial` | `barbearia.html` (first access) | `POST /api/barbearia/setup` | Initial barbershop configuration (RF01) |
+| `TelaLogin` | `index.html` | `POST /api/auth/login` | Credential authentication (RF02) |
+| `TelaHome` | `agenda.html` | `GET /api/agenda/hoje` | Daily schedule, visual timeline, and status actions (RF07, RF08, RF11) |
+| `Minha Barbearia` | `barbearia.html` | `GET /api/servicos`, `GET /api/barbeiros` | Barbershop, service, and barber management (RF03, RF04) |
+| `Histórico` | `historico.html` | `GET /api/historico` | Appointment history with filters (RF09) |
+| `TelaNovoAgendamento` | `agendamento.html` | `POST /api/agenda` | Appointment creation and conflict validation (RF05, RF06, RF10) |
+| `Clientes` tab | - | - | Consolidated client directory |
+| `Relatórios` | `relatorios.html` | `GET /api/relatorios` | Revenue, service, and barber reports (RF09) |
+
+---
+
+## 📋 Implemented Business Rules
+
+- An empty database starts the initial setup flow; an existing barbershop requires authentication.
+- Passwords are stored as salted PBKDF2 hashes.
+- Appointments require client, contact, date/time, service, barber, and contact origin.
+- The daily schedule shows only `AGENDADO` and `EM_ATENDIMENTO` appointments; history contains every status.
+- Barber conflicts use the real duration of both overlapping intervals.
+- Appointments outside configured business hours are rejected.
+- Cancellation accepts an optional reason.
+- RF11 classification is applied to both the desktop table and the web timeline/table.
+
+---
+
+## 🔎 Requirements Compliance
+
+- **RF01:** Initial barbershop, service, barber, and administrator setup. **Status:** Implemented.
+- **RF02:** Login and password authentication. **Status:** Implemented.
+- **RF03:** Create, update, and delete services. **Status:** Implemented.
+- **RF04:** Create, update, and delete barbers. **Status:** Implemented.
+- **RF05:** Create appointments with all operational fields. **Status:** Implemented.
+- **RF06:** Update and delete appointments. **Status:** Implemented.
+- **RF07:** Start and complete appointments. **Status:** Implemented.
+- **RF08:** Show only pending appointments on the daily schedule. **Status:** Implemented.
+- **RF09:** Provide complete history and reports. **Status:** Implemented.
+- **RF10:** Detect real time overlap by barber and service duration. **Status:** Implemented.
+- **RF11:** Visually classify appointments by time proximity and status. **Status:** Implemented.
+- **RF12:** Integrate the web client with REST endpoints for every main workflow. **Status:** Implemented.
+
+---
+
 ## 🧪 Automated Testing
 
 ```bash
@@ -225,6 +400,18 @@ mvn clean test
 Executes 68 automated tests:
 - 52 unit tests across `core` services and domain models.
 - 16 integration and controller tests across `api` REST endpoints.
+
+---
+
+## ✅ System Verification (Smoke Test)
+
+In addition to in-memory automated tests, the desktop module contains an operational verifier that exercises the system against a real MySQL database:
+
+```bash
+docker compose up -d
+mvn clean package -pl desktop -am
+java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.VerificacaoSistema
+```
 
 ---
 
@@ -240,13 +427,17 @@ Executes 68 automated tests:
 | --- | --- |
 | ![Desktop home screen](docs/screenshots/home-desktop.png) | ![Desktop new appointment screen](docs/screenshots/novo-agendamento-desktop.png) |
 
+| Desktop Edit Appointment | Desktop Manage Barber |
+| --- | --- |
+| ![Desktop edit appointment screen](docs/screenshots/editar-agendamento-desktop.png) | ![Desktop manage barber dialog](docs/screenshots/gerenciar-barbeiro-desktop.png) |
+
 | Desktop My Barbershop | Desktop History |
 | --- | --- |
 | ![Desktop My Barbershop screen](docs/screenshots/minha-barbearia-desktop.png) | ![Desktop history screen](docs/screenshots/historico-desktop.png) |
 
-| Desktop Reports | Desktop Manage Barber |
-| --- | --- |
-| ![Desktop reports screen](docs/screenshots/relatorios-desktop.png) | ![Desktop manage barber dialog](docs/screenshots/gerenciar-barbeiro-desktop.png) |
+| Desktop Reports |
+| --- |
+| ![Desktop reports screen](docs/screenshots/relatorios-desktop.png) |
 
 ### Web
 
@@ -277,3 +468,5 @@ Executes 68 automated tests:
 ## 📄 License
 
 Distributed under the MIT License. See [LICENSE](./LICENSE) for details.
+
+The MIT License covers original code and assets in this repository. Third-party libraries and tools remain subject to their respective licenses.

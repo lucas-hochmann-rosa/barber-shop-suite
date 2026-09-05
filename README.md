@@ -51,10 +51,12 @@ java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
 java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
 # ou, com a API no ar: curl -X POST http://localhost:8080/api/dev/seed
 
-# 7. Executar o Front-end Web estático pela raiz do repositório
+# 7. Alternativa: servir o Front-end Web estaticamente pela raiz do repositório
 python -m http.server 5500
 # acesse http://localhost:5500/web/index.html (login demo: barbershop / barbershop)
 ```
+
+Com a API iniciada pela raiz do repositório, a forma mais simples de usar a versão web é acessar <http://localhost:8080/index.html>.
 
 ---
 
@@ -63,7 +65,7 @@ python -m http.server 5500
 O **Barbershop** é um sistema para controle operacional completo de uma barbearia (atendimentos, equipe, serviços, histórico e faturamento), projetado em arquitetura modular:
 
 - **Núcleo Compartilhado (`core`)**: Centraliza as entidades de domínio, persistência JDBC, migrações idempotentes e regras de negócio essenciais (como a regra de classificação RF11 e a validação de sobreposição real de horários RF10), sem acoplamento com interfaces visuais.
-- **Versão Desktop (`desktop`)**: Aplicação desktop em Java Swing (Look & Feel FlatLaf) com bootstrap automático (cadastro inicial vs. login), CRUD de serviços/barbeiros, gestão de agenda em tempo real, painel de relatórios e smoke test operacional (`VerificacaoSistema`).
+- **Versão Desktop (`desktop`)**: Aplicação desktop responsiva em Java Swing (Look & Feel FlatLaf), com linguagem visual alinhada à web, bootstrap automático (cadastro inicial vs. login), CRUD de serviços/barbeiros, gestão de agenda em tempo real, painel de relatórios e smoke test operacional (`VerificacaoSistema`).
 - **Versão Web (`web`)**: Front-end moderno em HTML5, CSS3 modular e JavaScript puro, espelhando os fluxos operacionais da barbearia, com destaque para a **régua visual do dia** e o cliente REST integrado à API real.
 - **Back-end Web REST (`api`)**: Aplicação Java Web com Spring Boot 3.2.5 REST, expondo endpoints JSON para autenticação, barbearia, catálogo, agenda, histórico e relatórios.
 
@@ -94,7 +96,7 @@ O **Barbershop** é um sistema para controle operacional completo de uma barbear
 - Duração configurável por serviço, usada na regra de conflito (RF10).
 - Horário de funcionamento configurável por barbearia.
 - Diretório de clientes, populado automaticamente a partir dos agendamentos, com busca.
-- Cancelamento de agendamento com captura obrigatória do motivo.
+- Cancelamento de agendamento com registro opcional do motivo.
 - Atalho para abrir o WhatsApp do cliente a partir do agendamento.
 - Classificação visual de agendamentos por status/proximidade do horário (RF11).
 - Tela de Relatórios: faturamento por período, serviços mais vendidos e ranking de barbeiros.
@@ -190,6 +192,7 @@ barber-shop-suite/
 │
 └── api/                                # [MÓDULO 4] Back-end Java Web Spring Boot REST
     ├── pom.xml                         # Dependências do Spring Boot Starter Web e core
+    ├── nbactions.xml                   # Run, debug e profile do Spring Boot no NetBeans
     └── src/
         ├── main/java/br/com/barbershop/api/
         │   ├── Application.java        # Main class do Spring Boot
@@ -235,7 +238,7 @@ docker compose up -d
 #### Opção B: Executar via Linha de Comando (JAR)
 
 ```bash
-mvn clean package -pl desktop
+mvn clean package -pl desktop -am
 java -jar desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar
 ```
 
@@ -253,7 +256,7 @@ mvn install -pl core -am -DskipTests
 mvn -f api/pom.xml spring-boot:run
 
 # Ou via pacote JAR
-mvn clean package -pl api
+mvn clean package -pl api -am
 java -jar api/target/barber-shop-api-1.0-SNAPSHOT.jar
 ```
 
@@ -307,7 +310,7 @@ Formas de carregar:
 
 ```bash
 # Pela linha de comando do desktop
-mvn clean package -pl desktop
+mvn clean package -pl desktop -am
 java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.SeedDemoData
 
 # Pela API em ambiente de desenvolvimento, depois de iniciá-la
@@ -412,7 +415,7 @@ Ou podem ser sobrescritas via variáveis de ambiente do sistema operacional:
 O empacotamento gera um único **JAR executável sombreado (*fat jar*)**, contendo todas as dependências:
 
 ```bash
-mvn clean package -pl desktop
+mvn clean package -pl desktop -am
 ```
 Arquivo gerado: `desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar`.
 
@@ -438,7 +441,7 @@ Arquivo gerado: `desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar`.
 
 | Tela Desktop | Tela Web Equivalente | Endpoint REST | Objetivo |
 | --- | --- | --- | --- |
-| `TelaCadastroInicial` | - | `POST /api/barbearia/setup` | Configuração inicial da barbearia (RF01) |
+| `TelaCadastroInicial` | `barbearia.html` (primeiro acesso) | `POST /api/barbearia/setup` | Configuração inicial da barbearia (RF01) |
 | `TelaLogin` | `index.html` | `POST /api/auth/login` | Autenticação com credenciais (RF02) |
 | `TelaHome` | `agenda.html` | `GET /api/agenda/hoje` | Agenda diária, régua visual e ações rápidas (RF08, RF11, RF07) |
 | `Minha Barbearia` | `barbearia.html` | `GET /api/servicos`, `GET /api/barbeiros` | Manutenção de dados gerais, serviços e barbeiros (RF03, RF04) |
@@ -458,7 +461,7 @@ Arquivo gerado: `desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar`.
 - Histórico exibe todos os status (`AGENDADO`, `EM_ATENDIMENTO`, `CONCLUIDO`, `CANCELADO`).
 - Conflito por barbeiro considera a duração real do serviço (sobreposição real de intervalos, não janela fixa).
 - Agendamento fora do horário de funcionamento configurado da barbearia é bloqueado.
-- Cancelamento de agendamento exige captura do motivo.
+- Cancelamento de agendamento aceita o registro opcional de um motivo.
 - Classificação visual RF11 aplicada tanto na grade desktop quanto na régua/tabela web.
 
 ---
@@ -503,7 +506,7 @@ Além dos testes unitários em memória, o módulo desktop inclui um utilitário
 
 ```bash
 docker compose up -d
-mvn clean package -pl desktop
+mvn clean package -pl desktop -am
 java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.app.VerificacaoSistema
 ```
 
@@ -521,13 +524,17 @@ java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.a
 | --- | --- |
 | ![Home desktop](docs/screenshots/home-desktop.png) | ![Novo agendamento desktop](docs/screenshots/novo-agendamento-desktop.png) |
 
+| Editar Agendamento Desktop | Gerenciar Barbeiro Desktop |
+| --- | --- |
+| ![Editar agendamento desktop](docs/screenshots/editar-agendamento-desktop.png) | ![Gerenciar barbeiro desktop](docs/screenshots/gerenciar-barbeiro-desktop.png) |
+
 | Minha Barbearia Desktop | Histórico Desktop |
 | --- | --- |
 | ![Minha Barbearia desktop](docs/screenshots/minha-barbearia-desktop.png) | ![Histórico desktop](docs/screenshots/historico-desktop.png) |
 
-| Relatórios Desktop | Gerenciar Barbeiro Desktop |
-| --- | --- |
-| ![Relatórios desktop](docs/screenshots/relatorios-desktop.png) | ![Gerenciar barbeiro desktop](docs/screenshots/gerenciar-barbeiro-desktop.png) |
+| Relatórios Desktop |
+| --- |
+| ![Relatórios desktop](docs/screenshots/relatorios-desktop.png) |
 
 ### Web
 
@@ -558,3 +565,5 @@ java -cp desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar br.com.barbershop.a
 ## 📄 Licença
 
 Distribuído sob a licença MIT. Consulte o arquivo [LICENSE](./LICENSE) para mais detalhes.
+
+A licença MIT cobre o código e os assets originais deste repositório. Bibliotecas e ferramentas de terceiros permanecem sujeitas às respectivas licenças.

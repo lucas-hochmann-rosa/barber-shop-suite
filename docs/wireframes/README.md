@@ -1,5 +1,10 @@
 # 📐 Wireframes do Sistema (Barbershop)
 
+Estes wireframes registram a etapa de planejamento visual do projeto. Eles não
+substituem as capturas da implementação atual e podem conservar diferenças de
+navegação ou composição decididas durante o desenvolvimento. Para o estado
+visual entregue, consulte [`docs/screenshots`](../screenshots/README.md).
+
 Wireframes conceituais de baixa fidelidade em formato vetorial SVG, cobrindo tanto a aplicação desktop (Java Swing) quanto a interface web (HTML/CSS/JS).
 
 ---
