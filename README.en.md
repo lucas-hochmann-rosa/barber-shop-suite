@@ -115,7 +115,7 @@ barber-shop-suite/
         │   ├── config/                 # ServiceConfig and WebMvcConfig (CORS/Static)
         │   ├── controller/             # REST Controllers (Auth, Barbearia, Catalogo, Agenda, Historico, Relatorios, DevSeed)
         │   └── dto/                    # Data Transfer Objects
-        └── test/java/                  # 14 MockMvc integration tests
+        └── test/java/                  # 16 MockMvc integration tests
 ```
 
 ---
@@ -211,7 +211,7 @@ This keeps the visual identity aligned across web, API, and desktop, avoids asse
 - **Desktop UI:** Java Swing (FlatLaf `3.4.1` and FlatLaf Extras for SVG rendering)
 - **Web Back-end:** Spring Boot 3.2.5 REST (Spring MVC, Jackson JSR-310)
 - **Database:** MySQL 8 + JDBC (`mysql-connector-j 8.3.0`), HikariCP `5.1.0`
-- **Testing:** JUnit 5 (Jupiter) & Spring MockMvc (66 automated tests)
+- **Testing:** JUnit 5 (Jupiter) & Spring MockMvc (68 automated tests)
 - **Containerization:** Docker & Docker Compose
 
 ---
@@ -222,9 +222,9 @@ This keeps the visual identity aligned across web, API, and desktop, avoids asse
 mvn clean test
 ```
 
-Executes 66 automated tests:
+Executes 68 automated tests:
 - 52 unit tests across `core` services and domain models.
-- 14 integration and controller tests across `api` REST endpoints.
+- 16 integration and controller tests across `api` REST endpoints.
 
 ---
 

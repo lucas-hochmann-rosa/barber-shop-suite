@@ -484,7 +484,7 @@ Arquivo gerado: `desktop/target/barber-shop-desktop-1.0-SNAPSHOT.jar`.
 
 ## 🧪 Testes Automatizados
 
-Suíte de testes automatizados JUnit 5 (66 testes automatizados) rodando na raiz do projeto:
+Suíte de testes automatizados JUnit 5 (68 testes automatizados) rodando na raiz do projeto:
 
 ```bash
 mvn clean test
