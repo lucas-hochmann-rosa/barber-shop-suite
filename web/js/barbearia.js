@@ -191,7 +191,9 @@ const TelaBarbearia = {
 
     desenharBarbeiros() {
         const grade = document.getElementById('gradeBarbeiros');
-        grade.innerHTML = this.barbeiros.map((b) => `
+        grade.innerHTML = this.barbeiros.map((b) => {
+            const total = TelaBarbearia.contarAtendimentos(b.id);
+            return `
             <li class="cartao-item">
                 <div class="cartao-item__avatar">
                     <img src="${imagemBarbeiro(b)}" alt="" width="96" height="96">
@@ -199,14 +201,15 @@ const TelaBarbearia = {
                 <div class="cartao-item__corpo">
                     <h3 class="cartao-item__nome">${b.nome}</h3>
                     <p class="cartao-item__detalhe texto-secundario texto-pequeno">
-                        ${TelaBarbearia.contarAtendimentos(b.id)} atendimentos concluídos
+                        ${Formato.quantidade(total, 'atendimento concluído', 'atendimentos concluídos')}
                     </p>
                 </div>
                 <div class="cartao-item__acoes">
                     <button class="botao botao--secundario" type="button" data-editar="barbeiro" data-id="${b.id}">Editar</button>
                     <button class="botao botao--perigo" type="button" data-excluir="barbeiro" data-id="${b.id}">Excluir</button>
                 </div>
-            </li>`).join('');
+            </li>`;
+        }).join('');
     },
 
     contarAtendimentos(barbeiroId) {

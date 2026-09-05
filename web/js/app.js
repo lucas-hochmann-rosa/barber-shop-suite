@@ -11,6 +11,12 @@ const Formato = {
         });
     },
 
+    /** Aplica singular ou plural a uma quantidade: 1 atendimento, 2 atendimentos. */
+    quantidade(valor, singular, plural) {
+        const numero = Number(valor) || 0;
+        return `${numero} ${numero === 1 ? singular : plural}`;
+    },
+
     /** Data no padrão brasileiro: Date -> "13/08/2026". */
     data(data) {
         return data.toLocaleDateString('pt-BR', {
